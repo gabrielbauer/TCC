@@ -1,0 +1,90 @@
+(define "VarsNextTurn"
+    (seq {
+        (set Var "Rotation" -1)
+        (set Var "Captured" -1)
+    })
+)
+
+(define "MyLeapCapture"
+    (move Leap
+        #1
+        #2
+        rotations:False
+        (to
+            if:(not ("IsFriendAt" (to)))
+            (apply (if ("IsEnemyAt" (to)) (remove (to) (then (set Var "Captured" 1)))))
+        )
+        (then (seq {
+            (set Var "Rotation" #3)
+            (if (= (var "Captured") -1)
+                (moveAgain)
+                //else
+                ("VarsNextTurn")
+            )
+        }))
+    )
+)
+
+(define "FirstMove"
+    (or {
+        ("MyLeapCapture" (from) {{F F R F}} 0)
+        ("MyLeapCapture" (from) {{F R F F}} 1)
+        ("MyLeapCapture" (from) {{R F F R F}} 2)
+        ("MyLeapCapture" (from) {{R F R F F}} 3)
+        ("MyLeapCapture" (from) {{L F L F F}} 4)
+        ("MyLeapCapture" (from) {{L F F L F}} 5)
+        ("MyLeapCapture" (from) {{F L F F}} 6)
+        ("MyLeapCapture" (from) {{F F L F}} 7)
+    })
+)
+
+(define "NextMove"
+    (if (= (var "Rotation") #1) ("MyLeapCapture" (from (last To)) #2 (var "Rotation")))
+)
+
+(define "NextMoves"
+    (or {
+        ("NextMove" 0 {{F F R F}})
+        ("NextMove" 1 {{F R F F}})
+        ("NextMove" 2 {{R F F R F}})
+        ("NextMove" 3 {{R F R F F}})
+        ("NextMove" 4 {{L F L F F}})
+        ("NextMove" 5 {{L F F L F}})
+        ("NextMove" 6 {{F L F F}})
+        ("NextMove" 7 {{F F L F}})
+        (move Pass (then ("VarsNextTurn")))
+    })
+)
+
+(game "Nightrider"
+    (players 2)  
+    (equipment { 
+        (board (square 10)) 
+        (piece "Knight" Each
+            (if (= (var "Rotation") -1)
+                ("FirstMove")
+                //else
+                ("NextMoves")
+            )
+        )
+    })
+    (rules
+        (start {
+            (place Random {"Knight1"} count:10)
+            (place Random {"Knight2"} count:10)
+        })
+        (play 
+            (forEach Piece)
+        )
+        
+        (end {
+            (if (no Moves Next) (result Mover Win))
+        })
+    )
+)
+
+(metadata
+    (graphics {
+        (board Style Chess)
+    })
+)

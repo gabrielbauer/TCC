@@ -1,0 +1,19 @@
+UCT
+Flat MC
+UCT (Uncapped)
+MC-GRAVE
+Progressive History
+MAST
+Alpha-Beta
+MCTS (Hybrid Selection)
+Bandit Tree Search
+NST
+UCB1Tuned
+Progressive Bias
+EPT
+EPT-QB
+Score Bounded MCTS
+Heuristic Sampling
+One-Ply (No Heuristic)
+UBFM
+Hybrid UBFM
