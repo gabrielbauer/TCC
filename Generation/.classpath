@@ -10,5 +10,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Language"/>
+	<classpathentry kind="src" path="/Evaluation"/>
+	<classpathentry kind="src" path="/Player"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
