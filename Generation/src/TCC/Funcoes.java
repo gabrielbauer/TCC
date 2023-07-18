@@ -3,6 +3,7 @@ package TCC;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,21 +19,29 @@ import other.context.Context;
 import other.move.Move;
 import other.trial.Trial;
 import supplementary.experiments.EvalGamesThread;
+import main.grammar.Call;
+import main.grammar.Call.CallType;
 
 @SuppressWarnings("unused")
 
 /**
- * Testando variações em jogos.
- * Adquirindo conhecimento sobre os mesmos.
+ * Funções de utilidade para aplicar no pipeline.
  * 
  * @author Gabriel.Bauer
  */
 
 public class Funcoes {
-	final static int MAX_MOVES = 2000;
-	final static String pastaBase = "/home/gabriel/Documents/TCC_Ludii/gabriel_games_TCC/";
-	final static String arquivoNomesJogos = "listajogos.txt";
-	final static String arquivoListaAI = "listaAI.txt";
+	final static int MAX_MOVES 				= 2000;
+	final static String pastaBaseJogos		= System.getProperty("user.dir") + "/../gabriel_games_TCC/";
+	final static String arquivoNomesJogos 	= "listajogos.txt";
+	final static String arquivoListaAI 		= "listaAI.txt";
+	
+	final static List<String> ListaJogos 	= new ArrayList<String>();
+	final static List<String> listaAI 		= new ArrayList<String>();
+	
+	final static List<String> listaTerminaisNumericos = new ArrayList<String>(Arrays.asList(
+	"Integer", "DimConstant", "IntConstant", "Value", "BooleanConstant", "Boolean"));
+	final static List<String> listaTerminaisUnicos = new ArrayList<String>();
 	
 	/**
 	 * @param nome: nome do jogo.lud. Deve se encontrar na pasta gabriel_games_TCC.
@@ -40,7 +49,7 @@ public class Funcoes {
 	 **/
 	
 	public final static Game carregarJogoPorNome(String nomeDoJogo) {
-		final String caminho = pastaBase + nomeDoJogo;
+		final String caminho = pastaBaseJogos + nomeDoJogo;
 		File arquivo = new File(caminho);
 		
 		//TODO wrap with try catch
@@ -60,9 +69,8 @@ public class Funcoes {
 	}
 	
 	public final static List<String> carregarListaAI(){
-		final List<String> listaAI = new ArrayList<String>();
 		
-		final String caminho = pastaBase + arquivoListaAI;
+		final String caminho = pastaBaseJogos + arquivoListaAI;
 		
 		try {
 			File myObj = new File(caminho);
@@ -86,9 +94,8 @@ public class Funcoes {
 	
 	public final static List<String> carregarListaJogos(){
 		
-		final String caminho = pastaBase + arquivoNomesJogos;
+		final String caminho = pastaBaseJogos + arquivoNomesJogos;
 		
-		List<String> ListaJogos = new ArrayList<String>();
 		try {
 			File myObj = new File(caminho);
 			Scanner myReader = new Scanner(myObj);
@@ -141,7 +148,102 @@ public class Funcoes {
 	public static void salvarLog() {
 			
 	}
+		
+	public static void mostrarListaAI() {
+		if(!listaAI.isEmpty()) {
+			System.out.println("Lista IAs:");
+			int indice = 1;
+			for(String nomeAI : listaAI) {
+				System.out.println(indice + ": " + nomeAI);
+				indice++;
+			}
+		}
+		else {
+			System.out.println("Lista de IAs não inicializada.");
+		}
+	}
+	
+	public static String selecionarAI(){
+		mostrarListaAI();
+		System.out.println("Selecione uma IA: ");
+		Scanner objeto = new Scanner(System.in);
+	    int opcao = Integer.valueOf(objeto.nextLine());  // Read user input
+	    objeto.close();
+	    
+	    return listaAI.get(opcao - 1);
+	}
+	
+	public static void criarAnalise(ArrayList<Description> jogosCarregados, String nomeAI) {
+		final Report report = new Report();
+		int indice = 0;
+		
+		for (final Description description : jogosCarregados) {
+		
+			final Game game = Funcoes.carregarJogoPorDescricao(description);
+			final Evaluation evaluation = new Evaluation();
+			final List<String> options = new ArrayList<String>();
+			final int numberTrials = 1;
+			final int maxTurns = 60;
+			final double thinkTime = 0.5;
+			final List<Metric> metricsToEvaluate = new Evaluation().dialogMetrics();
+			final ArrayList<Double> weights = new ArrayList<Double>();
+			final boolean useDatabaseGames = false;
+			
+			avaliarJogo(game, evaluation, report, options, numberTrials, maxTurns, thinkTime,
+					metricsToEvaluate, weights, nomeAI, useDatabaseGames);
+		
+		}
+	}
+	
+	public static void imprimirTokenTree(Description description) {
+		System.out.println(description.tokenForest().tokenTree().toString());
+	}
+	
+	public static void percorrerCallTree(Call root) {
+		for(Call arg : root.args()) {
+			if(arg.type() == CallType.Class) {
+				percorrerCallTree(arg);
+			}
+			if(arg.type() == CallType.Array) {
+				percorrerCallTree(arg);
+			}
+			if(arg.type() == CallType.Terminal) {
+				verificarTerminalLista(arg.symbol().name());
+				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
+					System.out.println(arg.symbol().name() + ": "+ arg.object().toString());
+				}
+			}
+		}
+	}
+	
+	public static void verificarTerminalLista(String terminal) {
+		if(!listaTerminaisUnicos.contains(terminal)){
+			listaTerminaisUnicos.add(terminal);
+		}
+	}
+	
+	public static void preencherListaTerminais(List<Description> listaDescricoes) {
+		for (Description descricao : listaDescricoes) {
+			percorrerCallTree(descricao.callTree());
+		}
+	}
+	
+	public static void mostrarListaTerminais() {
+		if(listaTerminaisUnicos.isEmpty()) {
+			System.out.println("Lista de terminais não inicializada.");
+		}
+		else {
+			System.out.println("******************************");
+			System.out.println("Lista de terminais sem repetição");
+			for (String terminal : listaTerminaisUnicos) {
+				System.out.println(terminal);
+			}
+			System.out.println("******************************");
+		}
+	}
 
+	//TODO checar se posso excluir.
+	
 	// ************************************ COPY PASTE ************************************
 	
 	// @return Whether a trial of the game can be played without crashing.
