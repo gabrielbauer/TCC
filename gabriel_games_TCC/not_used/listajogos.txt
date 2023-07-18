@@ -1,9 +1,0 @@
-AmericanPoolCheckers.lud
-Bagha Guti.lud
-Ancient_Merels.lud
-Tic-Tac-Toe.lud
-1D Chess.lud
-Damas.lud
-nightrider.lud
-ConnectFour.lud
-Ultimate Tic-Tac-Toe.lud

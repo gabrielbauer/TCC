@@ -1,4 +1,12 @@
-moinho_6.lud
+Damas.lud
+nightrider.lud
+Ultimate Tic-Tac-Toe.lud
 moinho_hand.lud
+Tic-Tac-Toe.lud
+moinho_6.lud
+AmericanPoolCheckers.lud
+ConnectFour.lud
+1D Chess.lud
 moinho_9.lud
 moinho_12.lud
+Bagha Guti.lud
