@@ -1,0 +1,1323 @@
+game.Game
+    "Damas" (java.lang.String)
+    game.players.Players
+        {
+        game.players.Player
+            N (game.util.directions.DirectionFacing)
+        game.players.Player
+            S (game.util.directions.DirectionFacing)
+        }
+    -
+    game.equipment.Equipment
+        {
+        game.equipment.container.board.Board (game.equipment.Item)
+            game.functions.graph.generators.basis.square.Square (game.functions.graph.GraphFunction)
+                -
+                999 (game.functions.dim.DimFunction)
+                -
+                -
+            -
+            -
+            -
+            -
+            -
+            -
+        game.equipment.component.Piece (game.equipment.Item)
+            "Counter" (java.lang.String)
+            P1 (game.types.play.RoleType)
+            N (game.util.directions.DirectionFacing)
+            -
+            -
+            -
+            -
+            -
+        game.equipment.component.Piece (game.equipment.Item)
+            "Counter" (java.lang.String)
+            P2 (game.types.play.RoleType)
+            S (game.util.directions.DirectionFacing)
+            -
+            -
+            -
+            -
+            -
+        game.equipment.component.Piece (game.equipment.Item)
+            "DoubleCounter" (java.lang.String)
+            Each (game.types.play.RoleType)
+            -
+            -
+            -
+            -
+            -
+            -
+        game.equipment.other.Regions (game.equipment.Item)
+            -
+            P1 (game.types.play.RoleType)
+            -
+            game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                Bottom (game.functions.region.sites.SitesSimpleType)
+                -
+            -
+            -
+            -
+            -
+        game.equipment.other.Regions (game.equipment.Item)
+            -
+            P2 (game.types.play.RoleType)
+            -
+            game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                Top (game.functions.region.sites.SitesSimpleType)
+                -
+            -
+            -
+            -
+            -
+        }
+    game.rules.Rules
+        -
+        game.rules.start.Start
+            {
+            game.rules.start.place.Place (game.rules.start.StartRule)
+                "Counter1" (java.lang.String)
+                -
+                -
+                game.functions.region.math.Difference (game.functions.region.RegionFunction)
+                    game.functions.region.math.Expand (game.functions.region.RegionFunction)
+                        -
+                        -
+                        game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                            Bottom (game.functions.region.sites.SitesSimpleType)
+                            -
+                        -
+                        game.functions.ints.math.Sub (game.functions.ints.IntFunction) "steps:"
+                            999 (game.functions.ints.IntFunction)
+                            999 (game.functions.ints.IntFunction)
+                        -
+                        -
+                    game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                        Phase (game.functions.region.sites.SitesIndexType)
+                        -
+                        999 (game.functions.ints.IntFunction)
+                    -
+                -
+                -
+                -
+                -
+                -
+            game.rules.start.place.Place (game.rules.start.StartRule)
+                "Counter2" (java.lang.String)
+                -
+                -
+                game.functions.region.math.Difference (game.functions.region.RegionFunction)
+                    game.functions.region.math.Expand (game.functions.region.RegionFunction)
+                        -
+                        -
+                        game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                            Top (game.functions.region.sites.SitesSimpleType)
+                            -
+                        -
+                        game.functions.ints.math.Sub (game.functions.ints.IntFunction) "steps:"
+                            999 (game.functions.ints.IntFunction)
+                            999 (game.functions.ints.IntFunction)
+                        -
+                        -
+                    game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                        Phase (game.functions.region.sites.SitesIndexType)
+                        -
+                        999 (game.functions.ints.IntFunction)
+                    -
+                -
+                -
+                -
+                -
+                -
+            }
+            -
+        game.rules.play.Play
+            game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction)
+                    Prev (game.functions.booleans.is.IsPlayerType)
+                    -
+                    Mover (game.types.play.RoleType)
+                game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                    game.functions.booleans.math.Equals (game.functions.booleans.BooleanFunction)
+                        game.functions.ints.state.What (game.functions.ints.IntFunction)
+                            -
+                            game.functions.ints.last.Last (game.functions.ints.IntFunction) "at:"
+                                To (game.functions.ints.last.LastType)
+                                -
+                            -
+                        game.functions.ints.board.Id (game.functions.ints.IntFunction)
+                            "Counter" (java.lang.String)
+                            Mover (game.types.play.RoleType)
+                        -
+                    game.rules.play.moves.nonDecision.effect.requirement.max.Max (game.rules.play.moves.Moves)
+                        Moves (game.rules.play.moves.nonDecision.effect.requirement.max.MaxMovesType)
+                        -
+                        game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                            Hop (game.rules.play.moves.decision.MoveHopType)
+                            game.util.moves.From
+                                -
+                                -
+                                game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                    To (game.functions.ints.last.LastType)
+                                    -
+                                -
+                                -
+                            game.functions.directions.Directions (game.util.directions.Direction)
+                                -
+                                {
+                                FR (game.util.directions.RelativeDirection)
+                                FL (game.util.directions.RelativeDirection)
+                                }
+                                -
+                                -
+                            game.util.moves.Between
+                                -
+                                -
+                                -
+                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                    Enemy (game.functions.booleans.is.IsPlayerType)
+                                    game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                        -
+                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                        -
+                                    -
+                                -
+                                game.rules.play.moves.nonDecision.effect.Apply
+                                    game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                        -
+                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                        -
+                                        -
+                                        -
+                                        -
+                                        -
+                            game.util.moves.To
+                                -
+                                -
+                                -
+                                -
+                                -
+                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                    Empty (game.functions.booleans.is.IsSiteType)
+                                    -
+                                    game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                -
+                            -
+                            game.rules.play.moves.nonDecision.effect.Then
+                                game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.nonDecision.NonDecision)
+                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction)
+                                        In (game.functions.booleans.is.IsInType)
+                                        game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                            To (game.functions.ints.last.LastType)
+                                            -
+                                        -
+                                        game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                                            -
+                                            Next (game.types.play.RoleType)
+                                            -
+                                            -
+                                        -
+                                    game.rules.play.moves.nonDecision.operators.logical.And (game.rules.play.moves.Moves)
+                                        game.rules.play.moves.nonDecision.effect.Promote (game.rules.play.moves.Moves)
+                                            -
+                                            game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                To (game.functions.ints.last.LastType)
+                                                -
+                                            game.util.moves.Piece
+                                                "DoubleCounter" (java.lang.String)
+                                                -
+                                                -
+                                                -
+                                                -
+                                            -
+                                            Mover (game.types.play.RoleType)
+                                            -
+                                        game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                            game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                                Move (game.functions.booleans.can.CanType)
+                                                game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                                    Hop (game.rules.play.moves.decision.MoveHopType)
+                                                    game.util.moves.From
+                                                        -
+                                                        -
+                                                        game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                            To (game.functions.ints.last.LastType)
+                                                            -
+                                                        -
+                                                        -
+                                                    Diagonal (game.util.directions.Direction)
+                                                    game.util.moves.Between
+                                                        game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                                            Rows (game.functions.ints.count.CountSimpleType)
+                                                            -
+                                                        -
+                                                        game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                                            Rows (game.functions.ints.count.CountSimpleType)
+                                                            -
+                                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                            Enemy (game.functions.booleans.is.IsPlayerType)
+                                                            game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                                -
+                                                                game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                                -
+                                                            -
+                                                        -
+                                                        game.rules.play.moves.nonDecision.effect.Apply
+                                                            game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                                -
+                                                                game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                                -
+                                                                -
+                                                                -
+                                                                -
+                                                                -
+                                                    game.util.moves.To
+                                                        -
+                                                        -
+                                                        -
+                                                        -
+                                                        -
+                                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                            Empty (game.functions.booleans.is.IsSiteType)
+                                                            -
+                                                            game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                        -
+                                                    -
+                                                    -
+                                            game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                                -
+                                            -
+                                            -
+                                        -
+                                    game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                        game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                            Move (game.functions.booleans.can.CanType)
+                                            game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                                Hop (game.rules.play.moves.decision.MoveHopType)
+                                                game.util.moves.From
+                                                    -
+                                                    -
+                                                    game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                        To (game.functions.ints.last.LastType)
+                                                        -
+                                                    -
+                                                    -
+                                                game.functions.directions.Directions (game.util.directions.Direction)
+                                                    -
+                                                    {
+                                                    FR (game.util.directions.RelativeDirection)
+                                                    FL (game.util.directions.RelativeDirection)
+                                                    }
+                                                    -
+                                                    -
+                                                game.util.moves.Between
+                                                    -
+                                                    -
+                                                    -
+                                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                        Enemy (game.functions.booleans.is.IsPlayerType)
+                                                        game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                            -
+                                                            game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                            -
+                                                        -
+                                                    -
+                                                    game.rules.play.moves.nonDecision.effect.Apply
+                                                        game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                            -
+                                                            game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                            -
+                                                            -
+                                                            -
+                                                            -
+                                                            -
+                                                game.util.moves.To
+                                                    -
+                                                    -
+                                                    -
+                                                    -
+                                                    -
+                                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                        Empty (game.functions.booleans.is.IsSiteType)
+                                                        -
+                                                        game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                    -
+                                                -
+                                                -
+                                        game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                            -
+                                        -
+                                        -
+                                    -
+                                -
+                        -
+                    game.rules.play.moves.nonDecision.effect.requirement.max.Max (game.rules.play.moves.Moves)
+                        Moves (game.rules.play.moves.nonDecision.effect.requirement.max.MaxMovesType)
+                        -
+                        game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                            Hop (game.rules.play.moves.decision.MoveHopType)
+                            game.util.moves.From
+                                -
+                                -
+                                game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                    To (game.functions.ints.last.LastType)
+                                    -
+                                -
+                                -
+                            Diagonal (game.util.directions.Direction)
+                            game.util.moves.Between
+                                game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                    Rows (game.functions.ints.count.CountSimpleType)
+                                    -
+                                -
+                                game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                    Rows (game.functions.ints.count.CountSimpleType)
+                                    -
+                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                    Enemy (game.functions.booleans.is.IsPlayerType)
+                                    game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                        -
+                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                        -
+                                    -
+                                -
+                                game.rules.play.moves.nonDecision.effect.Apply
+                                    game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                        -
+                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                        -
+                                        -
+                                        -
+                                        -
+                                        -
+                            game.util.moves.To
+                                -
+                                -
+                                -
+                                -
+                                -
+                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                    Empty (game.functions.booleans.is.IsSiteType)
+                                    -
+                                    game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                -
+                            -
+                            game.rules.play.moves.nonDecision.effect.Then
+                                game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.nonDecision.NonDecision)
+                                    game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                        Move (game.functions.booleans.can.CanType)
+                                        game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                            Hop (game.rules.play.moves.decision.MoveHopType)
+                                            game.util.moves.From
+                                                -
+                                                -
+                                                game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                    To (game.functions.ints.last.LastType)
+                                                    -
+                                                -
+                                                -
+                                            Diagonal (game.util.directions.Direction)
+                                            game.util.moves.Between
+                                                game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                                    Rows (game.functions.ints.count.CountSimpleType)
+                                                    -
+                                                -
+                                                game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                                    Rows (game.functions.ints.count.CountSimpleType)
+                                                    -
+                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                    Enemy (game.functions.booleans.is.IsPlayerType)
+                                                    game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                        -
+                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                        -
+                                                    -
+                                                -
+                                                game.rules.play.moves.nonDecision.effect.Apply
+                                                    game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                        -
+                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                        -
+                                                        -
+                                                        -
+                                                        -
+                                                        -
+                                            game.util.moves.To
+                                                -
+                                                -
+                                                -
+                                                -
+                                                -
+                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                    Empty (game.functions.booleans.is.IsSiteType)
+                                                    -
+                                                    game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                -
+                                            -
+                                            -
+                                    game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                        -
+                                    -
+                                    -
+                                -
+                        -
+                    -
+                game.rules.play.moves.nonDecision.effect.requirement.Do (game.rules.play.moves.Moves)
+                    game.rules.play.moves.nonDecision.effect.set.Set (game.rules.play.moves.Moves)
+                        Pending (game.rules.play.moves.nonDecision.effect.set.SetPendingType)
+                        -
+                        game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                            From (game.functions.region.sites.SitesMoveType)
+                            game.rules.play.moves.nonDecision.effect.requirement.max.Max (game.rules.play.moves.Moves)
+                                Moves (game.rules.play.moves.nonDecision.effect.requirement.max.MaxMovesType)
+                                -
+                                game.rules.play.moves.nonDecision.operators.logical.Or (game.rules.play.moves.Moves)
+                                    game.rules.play.moves.nonDecision.operators.foreach.ForEach (game.rules.play.moves.Moves)
+                                        Piece (game.rules.play.moves.nonDecision.operators.foreach.ForEachPieceType)
+                                        -
+                                        "Counter" (java.lang.String)
+                                        -
+                                        -
+                                        -
+                                        game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                            Hop (game.rules.play.moves.decision.MoveHopType)
+                                            game.util.moves.From
+                                                -
+                                                -
+                                                -
+                                                -
+                                                -
+                                            game.functions.directions.Directions (game.util.directions.Direction)
+                                                -
+                                                {
+                                                FR (game.util.directions.RelativeDirection)
+                                                FL (game.util.directions.RelativeDirection)
+                                                }
+                                                -
+                                                -
+                                            game.util.moves.Between
+                                                -
+                                                -
+                                                -
+                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                    Enemy (game.functions.booleans.is.IsPlayerType)
+                                                    game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                        -
+                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                        -
+                                                    -
+                                                -
+                                                game.rules.play.moves.nonDecision.effect.Apply
+                                                    game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                        -
+                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                        -
+                                                        -
+                                                        -
+                                                        -
+                                                        -
+                                            game.util.moves.To
+                                                -
+                                                -
+                                                -
+                                                -
+                                                -
+                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                    Empty (game.functions.booleans.is.IsSiteType)
+                                                    -
+                                                    game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                -
+                                            -
+                                            game.rules.play.moves.nonDecision.effect.Then
+                                                game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.nonDecision.NonDecision)
+                                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction)
+                                                        In (game.functions.booleans.is.IsInType)
+                                                        game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                            To (game.functions.ints.last.LastType)
+                                                            -
+                                                        -
+                                                        game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                                                            -
+                                                            Next (game.types.play.RoleType)
+                                                            -
+                                                            -
+                                                        -
+                                                    game.rules.play.moves.nonDecision.operators.logical.And (game.rules.play.moves.Moves)
+                                                        game.rules.play.moves.nonDecision.effect.Promote (game.rules.play.moves.Moves)
+                                                            -
+                                                            game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                                To (game.functions.ints.last.LastType)
+                                                                -
+                                                            game.util.moves.Piece
+                                                                "DoubleCounter" (java.lang.String)
+                                                                -
+                                                                -
+                                                                -
+                                                                -
+                                                            -
+                                                            Mover (game.types.play.RoleType)
+                                                            -
+                                                        game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                                            game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                                                Move (game.functions.booleans.can.CanType)
+                                                                game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                                                    Hop (game.rules.play.moves.decision.MoveHopType)
+                                                                    game.util.moves.From
+                                                                        -
+                                                                        -
+                                                                        game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                                            To (game.functions.ints.last.LastType)
+                                                                            -
+                                                                        -
+                                                                        -
+                                                                    Diagonal (game.util.directions.Direction)
+                                                                    game.util.moves.Between
+                                                                        game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                                                            Rows (game.functions.ints.count.CountSimpleType)
+                                                                            -
+                                                                        -
+                                                                        game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                                                            Rows (game.functions.ints.count.CountSimpleType)
+                                                                            -
+                                                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                            Enemy (game.functions.booleans.is.IsPlayerType)
+                                                                            game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                                                -
+                                                                                game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                                                -
+                                                                            -
+                                                                        -
+                                                                        game.rules.play.moves.nonDecision.effect.Apply
+                                                                            game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                                                -
+                                                                                game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                                                -
+                                                                                -
+                                                                                -
+                                                                                -
+                                                                                -
+                                                                    game.util.moves.To
+                                                                        -
+                                                                        -
+                                                                        -
+                                                                        -
+                                                                        -
+                                                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                            Empty (game.functions.booleans.is.IsSiteType)
+                                                                            -
+                                                                            game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                                        -
+                                                                    -
+                                                                    -
+                                                            game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                                                -
+                                                            -
+                                                            -
+                                                        -
+                                                    game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                                        game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                                            Move (game.functions.booleans.can.CanType)
+                                                            game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                                                Hop (game.rules.play.moves.decision.MoveHopType)
+                                                                game.util.moves.From
+                                                                    -
+                                                                    -
+                                                                    game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                                        To (game.functions.ints.last.LastType)
+                                                                        -
+                                                                    -
+                                                                    -
+                                                                game.functions.directions.Directions (game.util.directions.Direction)
+                                                                    -
+                                                                    {
+                                                                    FR (game.util.directions.RelativeDirection)
+                                                                    FL (game.util.directions.RelativeDirection)
+                                                                    }
+                                                                    -
+                                                                    -
+                                                                game.util.moves.Between
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                        Enemy (game.functions.booleans.is.IsPlayerType)
+                                                                        game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                                            -
+                                                                            game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                                            -
+                                                                        -
+                                                                    -
+                                                                    game.rules.play.moves.nonDecision.effect.Apply
+                                                                        game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                                            -
+                                                                            game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                                            -
+                                                                            -
+                                                                            -
+                                                                            -
+                                                                            -
+                                                                game.util.moves.To
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                        Empty (game.functions.booleans.is.IsSiteType)
+                                                                        -
+                                                                        game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                                    -
+                                                                -
+                                                                -
+                                                        game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                                            -
+                                                        -
+                                                        -
+                                                    -
+                                                -
+                                        -
+                                        -
+                                        -
+                                        -
+                                    game.rules.play.moves.nonDecision.operators.foreach.ForEach (game.rules.play.moves.Moves)
+                                        Piece (game.rules.play.moves.nonDecision.operators.foreach.ForEachPieceType)
+                                        -
+                                        "DoubleCounter" (java.lang.String)
+                                        -
+                                        -
+                                        -
+                                        game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                            Hop (game.rules.play.moves.decision.MoveHopType)
+                                            game.util.moves.From
+                                                -
+                                                -
+                                                -
+                                                -
+                                                -
+                                            Diagonal (game.util.directions.Direction)
+                                            game.util.moves.Between
+                                                game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                                    Rows (game.functions.ints.count.CountSimpleType)
+                                                    -
+                                                -
+                                                game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                                    Rows (game.functions.ints.count.CountSimpleType)
+                                                    -
+                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                    Enemy (game.functions.booleans.is.IsPlayerType)
+                                                    game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                        -
+                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                        -
+                                                    -
+                                                -
+                                                game.rules.play.moves.nonDecision.effect.Apply
+                                                    game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                        -
+                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                        -
+                                                        -
+                                                        -
+                                                        -
+                                                        -
+                                            game.util.moves.To
+                                                -
+                                                -
+                                                -
+                                                -
+                                                -
+                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                    Empty (game.functions.booleans.is.IsSiteType)
+                                                    -
+                                                    game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                -
+                                            -
+                                            game.rules.play.moves.nonDecision.effect.Then
+                                                game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.nonDecision.NonDecision)
+                                                    game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                                        Move (game.functions.booleans.can.CanType)
+                                                        game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                                            Hop (game.rules.play.moves.decision.MoveHopType)
+                                                            game.util.moves.From
+                                                                -
+                                                                -
+                                                                game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                                    To (game.functions.ints.last.LastType)
+                                                                    -
+                                                                -
+                                                                -
+                                                            Diagonal (game.util.directions.Direction)
+                                                            game.util.moves.Between
+                                                                game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                                                    Rows (game.functions.ints.count.CountSimpleType)
+                                                                    -
+                                                                -
+                                                                game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                                                    Rows (game.functions.ints.count.CountSimpleType)
+                                                                    -
+                                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                    Enemy (game.functions.booleans.is.IsPlayerType)
+                                                                    game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                                        -
+                                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                                        -
+                                                                    -
+                                                                -
+                                                                game.rules.play.moves.nonDecision.effect.Apply
+                                                                    game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                                        -
+                                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                                        -
+                                                                        -
+                                                                        -
+                                                                        -
+                                                                        -
+                                                            game.util.moves.To
+                                                                -
+                                                                -
+                                                                -
+                                                                -
+                                                                -
+                                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                    Empty (game.functions.booleans.is.IsSiteType)
+                                                                    -
+                                                                    game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                                -
+                                                            -
+                                                            -
+                                                    game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                                        -
+                                                    -
+                                                    -
+                                                -
+                                        -
+                                        -
+                                        -
+                                        -
+                                    -
+                                -
+                        -
+                    game.rules.play.moves.nonDecision.operators.logical.Or (game.rules.play.moves.Moves) "next:"
+                        {
+                        game.rules.play.moves.nonDecision.operators.foreach.ForEach (game.rules.play.moves.Moves)
+                            Piece (game.rules.play.moves.nonDecision.operators.foreach.ForEachPieceType)
+                            -
+                            "Counter" (java.lang.String)
+                            -
+                            -
+                            -
+                            game.rules.play.moves.nonDecision.effect.requirement.max.Max (game.rules.play.moves.Moves)
+                                Moves (game.rules.play.moves.nonDecision.effect.requirement.max.MaxMovesType)
+                                -
+                                game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                    Hop (game.rules.play.moves.decision.MoveHopType)
+                                    game.util.moves.From
+                                        -
+                                        -
+                                        -
+                                        -
+                                        -
+                                    game.functions.directions.Directions (game.util.directions.Direction)
+                                        -
+                                        {
+                                        FR (game.util.directions.RelativeDirection)
+                                        FL (game.util.directions.RelativeDirection)
+                                        }
+                                        -
+                                        -
+                                    game.util.moves.Between
+                                        -
+                                        -
+                                        -
+                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                            Enemy (game.functions.booleans.is.IsPlayerType)
+                                            game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                -
+                                                game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                -
+                                            -
+                                        -
+                                        game.rules.play.moves.nonDecision.effect.Apply
+                                            game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                -
+                                                game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                -
+                                                -
+                                                -
+                                                -
+                                                -
+                                    game.util.moves.To
+                                        -
+                                        -
+                                        -
+                                        -
+                                        -
+                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                            Empty (game.functions.booleans.is.IsSiteType)
+                                            -
+                                            game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                        -
+                                    -
+                                    game.rules.play.moves.nonDecision.effect.Then
+                                        game.rules.play.moves.nonDecision.operators.logical.And (game.rules.play.moves.nonDecision.NonDecision)
+                                            game.rules.play.moves.nonDecision.effect.set.Set (game.rules.play.moves.Moves)
+                                                999 (game.rules.play.moves.nonDecision.effect.set.SetPlayerType)
+                                                -
+                                                Mover (game.types.play.RoleType)
+                                                game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                    To (game.functions.ints.last.LastType)
+                                                    -
+                                                -
+                                            game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction)
+                                                    In (game.functions.booleans.is.IsInType)
+                                                    game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                        To (game.functions.ints.last.LastType)
+                                                        -
+                                                    -
+                                                    game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                                                        -
+                                                        Next (game.types.play.RoleType)
+                                                        -
+                                                        -
+                                                    -
+                                                game.rules.play.moves.nonDecision.operators.logical.And (game.rules.play.moves.Moves)
+                                                    game.rules.play.moves.nonDecision.effect.Promote (game.rules.play.moves.Moves)
+                                                        -
+                                                        game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                            To (game.functions.ints.last.LastType)
+                                                            -
+                                                        game.util.moves.Piece
+                                                            "DoubleCounter" (java.lang.String)
+                                                            -
+                                                            -
+                                                            -
+                                                            -
+                                                        -
+                                                        Mover (game.types.play.RoleType)
+                                                        -
+                                                    game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                                        game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                                            Move (game.functions.booleans.can.CanType)
+                                                            game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                                                Hop (game.rules.play.moves.decision.MoveHopType)
+                                                                game.util.moves.From
+                                                                    -
+                                                                    -
+                                                                    game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                                        To (game.functions.ints.last.LastType)
+                                                                        -
+                                                                    -
+                                                                    -
+                                                                Diagonal (game.util.directions.Direction)
+                                                                game.util.moves.Between
+                                                                    game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                                                        Rows (game.functions.ints.count.CountSimpleType)
+                                                                        -
+                                                                    -
+                                                                    game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                                                        Rows (game.functions.ints.count.CountSimpleType)
+                                                                        -
+                                                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                        Enemy (game.functions.booleans.is.IsPlayerType)
+                                                                        game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                                            -
+                                                                            game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                                            -
+                                                                        -
+                                                                    -
+                                                                    game.rules.play.moves.nonDecision.effect.Apply
+                                                                        game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                                            -
+                                                                            game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                                            -
+                                                                            -
+                                                                            -
+                                                                            -
+                                                                            -
+                                                                game.util.moves.To
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                        Empty (game.functions.booleans.is.IsSiteType)
+                                                                        -
+                                                                        game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                                    -
+                                                                -
+                                                                -
+                                                        game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                                            -
+                                                        -
+                                                        -
+                                                    -
+                                                game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                                    game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                                        Move (game.functions.booleans.can.CanType)
+                                                        game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                                            Hop (game.rules.play.moves.decision.MoveHopType)
+                                                            game.util.moves.From
+                                                                -
+                                                                -
+                                                                game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                                    To (game.functions.ints.last.LastType)
+                                                                    -
+                                                                -
+                                                                -
+                                                            game.functions.directions.Directions (game.util.directions.Direction)
+                                                                -
+                                                                {
+                                                                FR (game.util.directions.RelativeDirection)
+                                                                FL (game.util.directions.RelativeDirection)
+                                                                }
+                                                                -
+                                                                -
+                                                            game.util.moves.Between
+                                                                -
+                                                                -
+                                                                -
+                                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                    Enemy (game.functions.booleans.is.IsPlayerType)
+                                                                    game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                                        -
+                                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                                        -
+                                                                    -
+                                                                -
+                                                                game.rules.play.moves.nonDecision.effect.Apply
+                                                                    game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                                        -
+                                                                        game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                                        -
+                                                                        -
+                                                                        -
+                                                                        -
+                                                                        -
+                                                            game.util.moves.To
+                                                                -
+                                                                -
+                                                                -
+                                                                -
+                                                                -
+                                                                game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                    Empty (game.functions.booleans.is.IsSiteType)
+                                                                    -
+                                                                    game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                                -
+                                                            -
+                                                            -
+                                                    game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                                        -
+                                                    -
+                                                    -
+                                                -
+                                            -
+                                        -
+                                -
+                            -
+                            -
+                            -
+                            -
+                        game.rules.play.moves.nonDecision.operators.foreach.ForEach (game.rules.play.moves.Moves)
+                            Piece (game.rules.play.moves.nonDecision.operators.foreach.ForEachPieceType)
+                            -
+                            "DoubleCounter" (java.lang.String)
+                            -
+                            -
+                            -
+                            game.rules.play.moves.nonDecision.effect.requirement.max.Max (game.rules.play.moves.Moves)
+                                Moves (game.rules.play.moves.nonDecision.effect.requirement.max.MaxMovesType)
+                                -
+                                game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                    Hop (game.rules.play.moves.decision.MoveHopType)
+                                    game.util.moves.From
+                                        -
+                                        -
+                                        -
+                                        -
+                                        -
+                                    Diagonal (game.util.directions.Direction)
+                                    game.util.moves.Between
+                                        game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                            Rows (game.functions.ints.count.CountSimpleType)
+                                            -
+                                        -
+                                        game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                            Rows (game.functions.ints.count.CountSimpleType)
+                                            -
+                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                            Enemy (game.functions.booleans.is.IsPlayerType)
+                                            game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                -
+                                                game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                -
+                                            -
+                                        -
+                                        game.rules.play.moves.nonDecision.effect.Apply
+                                            game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                -
+                                                game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                -
+                                                -
+                                                -
+                                                -
+                                                -
+                                    game.util.moves.To
+                                        -
+                                        -
+                                        -
+                                        -
+                                        -
+                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                            Empty (game.functions.booleans.is.IsSiteType)
+                                            -
+                                            game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                        -
+                                    -
+                                    game.rules.play.moves.nonDecision.effect.Then
+                                        game.rules.play.moves.nonDecision.operators.logical.And (game.rules.play.moves.nonDecision.NonDecision)
+                                            game.rules.play.moves.nonDecision.effect.set.Set (game.rules.play.moves.Moves)
+                                                999 (game.rules.play.moves.nonDecision.effect.set.SetPlayerType)
+                                                -
+                                                Mover (game.types.play.RoleType)
+                                                game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                    To (game.functions.ints.last.LastType)
+                                                    -
+                                                -
+                                            game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                                game.functions.booleans.can.Can (game.functions.booleans.BooleanFunction)
+                                                    Move (game.functions.booleans.can.CanType)
+                                                    game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                                        Hop (game.rules.play.moves.decision.MoveHopType)
+                                                        game.util.moves.From
+                                                            -
+                                                            -
+                                                            game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                                To (game.functions.ints.last.LastType)
+                                                                -
+                                                            -
+                                                            -
+                                                        Diagonal (game.util.directions.Direction)
+                                                        game.util.moves.Between
+                                                            game.functions.ints.count.Count (game.functions.ints.IntFunction) "before:"
+                                                                Rows (game.functions.ints.count.CountSimpleType)
+                                                                -
+                                                            -
+                                                            game.functions.ints.count.Count (game.functions.ints.IntFunction) "after:"
+                                                                Rows (game.functions.ints.count.CountSimpleType)
+                                                                -
+                                                            game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                Enemy (game.functions.booleans.is.IsPlayerType)
+                                                                game.functions.ints.state.Who (game.functions.ints.IntFunction)
+                                                                    -
+                                                                    game.functions.ints.iterator.Between (game.functions.ints.IntFunction) "at:"
+                                                                    -
+                                                                -
+                                                            -
+                                                            game.rules.play.moves.nonDecision.effect.Apply
+                                                                game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.nonDecision.NonDecision)
+                                                                    -
+                                                                    game.functions.ints.iterator.Between (game.functions.ints.IntFunction)
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    -
+                                                                    -
+                                                        game.util.moves.To
+                                                            -
+                                                            -
+                                                            -
+                                                            -
+                                                            -
+                                                            game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                                                Empty (game.functions.booleans.is.IsSiteType)
+                                                                -
+                                                                game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                                            -
+                                                        -
+                                                        -
+                                                game.rules.play.moves.nonDecision.effect.state.MoveAgain (game.rules.play.moves.Moves)
+                                                    -
+                                                -
+                                                -
+                                            -
+                                        -
+                                -
+                            -
+                            -
+                            -
+                            -
+                        game.rules.play.moves.nonDecision.operators.foreach.ForEach (game.rules.play.moves.Moves)
+                            Piece (game.rules.play.moves.nonDecision.operators.foreach.ForEachPieceType)
+                            -
+                            "Counter" (java.lang.String)
+                            -
+                            -
+                            -
+                            game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                Step (game.rules.play.moves.decision.MoveStepType)
+                                -
+                                game.functions.directions.Directions (game.util.directions.Direction)
+                                    -
+                                    {
+                                    FR (game.util.directions.RelativeDirection)
+                                    FL (game.util.directions.RelativeDirection)
+                                    }
+                                    -
+                                    -
+                                game.util.moves.To
+                                    -
+                                    -
+                                    -
+                                    -
+                                    -
+                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction) "if:"
+                                        Empty (game.functions.booleans.is.IsSiteType)
+                                        -
+                                        game.functions.ints.iterator.To (game.functions.ints.IntFunction)
+                                    -
+                                -
+                                game.rules.play.moves.nonDecision.effect.Then
+                                    game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.nonDecision.NonDecision)
+                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction)
+                                            In (game.functions.booleans.is.IsInType)
+                                            game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                To (game.functions.ints.last.LastType)
+                                                -
+                                            -
+                                            game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                                                -
+                                                Next (game.types.play.RoleType)
+                                                -
+                                                -
+                                            -
+                                        game.rules.play.moves.nonDecision.effect.Promote (game.rules.play.moves.Moves)
+                                            -
+                                            game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                To (game.functions.ints.last.LastType)
+                                                -
+                                            game.util.moves.Piece
+                                                "DoubleCounter" (java.lang.String)
+                                                -
+                                                -
+                                                -
+                                                -
+                                            -
+                                            Mover (game.types.play.RoleType)
+                                            -
+                                        -
+                                        -
+                                    -
+                            -
+                            -
+                            -
+                            -
+                        game.rules.play.moves.nonDecision.operators.foreach.ForEach (game.rules.play.moves.Moves)
+                            Piece (game.rules.play.moves.nonDecision.operators.foreach.ForEachPieceType)
+                            -
+                            "DoubleCounter" (java.lang.String)
+                            -
+                            -
+                            -
+                            game.rules.play.moves.decision.Move (game.rules.play.moves.Moves)
+                                Slide (game.rules.play.moves.decision.MoveSlideType)
+                                -
+                                -
+                                Diagonal (game.util.directions.Direction)
+                                -
+                                -
+                                -
+                                -
+                            -
+                            -
+                            -
+                            -
+                        }
+                        -
+                    -
+                    game.rules.play.moves.nonDecision.effect.Then
+                        game.rules.play.moves.nonDecision.operators.logical.And (game.rules.play.moves.nonDecision.NonDecision)
+                            game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                game.functions.booleans.math.And (game.functions.booleans.BooleanFunction)
+                                    game.functions.booleans.math.NotEqual (game.functions.booleans.BooleanFunction)
+                                        game.functions.ints.value.Value (game.functions.ints.IntFunction)
+                                            Player (game.functions.ints.value.ValuePlayerType)
+                                            -
+                                            Mover (game.types.play.RoleType)
+                                        game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                            To (game.functions.ints.last.LastType)
+                                            -
+                                        -
+                                    game.functions.booleans.math.Not (game.functions.booleans.BooleanFunction)
+                                        game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction)
+                                            In (game.functions.booleans.is.IsInType)
+                                            game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                                To (game.functions.ints.last.LastType)
+                                                -
+                                            -
+                                            game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                                                Pending (game.functions.region.sites.SitesSimpleType)
+                                                -
+                                            -
+                                game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.Moves)
+                                    -
+                                    -
+                                    game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                                        Pending (game.functions.region.sites.SitesSimpleType)
+                                        -
+                                    -
+                                    -
+                                    -
+                                    -
+                                -
+                                -
+                            game.rules.play.moves.nonDecision.operators.logical.If (game.rules.play.moves.Moves)
+                                game.functions.booleans.math.And (game.functions.booleans.BooleanFunction)
+                                    game.functions.booleans.math.NotEqual (game.functions.booleans.BooleanFunction)
+                                        game.functions.ints.value.Value (game.functions.ints.IntFunction)
+                                            Player (game.functions.ints.value.ValuePlayerType)
+                                            -
+                                            Mover (game.types.play.RoleType)
+                                        game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                            To (game.functions.ints.last.LastType)
+                                            -
+                                        -
+                                    game.functions.booleans.is.Is (game.functions.booleans.BooleanFunction)
+                                        In (game.functions.booleans.is.IsInType)
+                                        game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                            From (game.functions.ints.last.LastType)
+                                            -
+                                        -
+                                        game.functions.region.sites.Sites (game.functions.region.RegionFunction)
+                                            Pending (game.functions.region.sites.SitesSimpleType)
+                                            -
+                                        -
+                                game.rules.play.moves.nonDecision.effect.Remove (game.rules.play.moves.Moves)
+                                    -
+                                    game.functions.ints.last.Last (game.functions.ints.IntFunction)
+                                        To (game.functions.ints.last.LastType)
+                                        -
+                                    -
+                                    -
+                                    -
+                                    -
+                                    -
+                                -
+                                -
+                            -
+                        -
+                -
+        game.rules.end.End
+            game.rules.end.ForEach (game.rules.end.EndRule)
+                Player (game.types.play.RoleType)
+                -
+                game.functions.booleans.no.No (game.functions.booleans.BooleanFunction) "if:"
+                    Moves (game.functions.booleans.no.NoMoveType)
+                    Player (game.types.play.RoleType)
+                game.rules.end.Result
+                    Player (game.types.play.RoleType)
+                    Loss (game.types.play.ResultType)
+            -

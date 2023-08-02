@@ -1,26 +1,36 @@
 package TCC;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
+
 import compiler.Compiler;
+
 import game.Game;
+
 import main.grammar.Description;
 import main.grammar.Report;
 import main.options.UserSelections;
+import main.grammar.Call;
+import main.grammar.Call.CallType;
+
 import metrics.Evaluation;
 import metrics.Metric;
+
 import other.GameLoader;
 import other.context.Context;
 import other.move.Move;
 import other.trial.Trial;
+
 import supplementary.experiments.EvalGamesThread;
-import main.grammar.Call;
-import main.grammar.Call.CallType;
+
 
 @SuppressWarnings("unused")
 
@@ -40,7 +50,8 @@ public class Funcoes {
 	final static List<String> listaAI 		= new ArrayList<String>();
 	
 	final static List<String> listaTerminaisNumericos = new ArrayList<String>(Arrays.asList(
-	"Integer", "DimConstant", "IntConstant", "Value", "BooleanConstant", "Boolean"));
+	"Integer", "DimConstant", "IntConstant"));
+	//, "Value", "BooleanConstant", "Boolean"
 	final static List<String> listaTerminaisUnicos = new ArrayList<String>();
 	
 	/**
@@ -109,6 +120,25 @@ public class Funcoes {
 			e.printStackTrace();
 		}
 		return ListaJogos;
+	}
+	
+	public final static boolean salvarJogo(String nomeJogo, Description description) {
+		final String caminhoArquivo = pastaBaseJogos + nomeJogo + ".lud";
+		try {
+			FileWriter myWriter = new FileWriter(caminhoArquivo, true);
+			for(String ludeme:description.callTree().ludemeFormat(20)) {
+				myWriter.write(ludeme);
+				myWriter.write("\n");
+			}
+
+			myWriter.close();
+			System.out.println("Successfully wrote to the file.");
+			return true;
+		} catch (IOException e) {
+			System.out.println("An error occurred.");
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	public final static ArrayList<Description> carregarListaJogos(final List<String> ListaJogos) {
@@ -211,6 +241,23 @@ public class Funcoes {
 				verificarTerminalLista(arg.symbol().name());
 				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
 					System.out.println(arg.symbol().name() + ": "+ arg.object().toString());
+				}
+			}
+		}
+	}
+	
+	public static void alterarCallTree(Call root) {
+		for(Call arg : root.args()) {
+			if(arg.type() == CallType.Class) {
+				alterarCallTree(arg);
+			}
+			if(arg.type() == CallType.Array) {
+				alterarCallTree(arg);
+			}
+			if(arg.type() == CallType.Terminal) {
+				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
+					Object obj = (Object) 2;
+					arg.setObject(obj);
 				}
 			}
 		}

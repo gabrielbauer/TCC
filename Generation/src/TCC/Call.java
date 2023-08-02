@@ -1,5 +1,5 @@
+package TCC;
 
-package main.grammar;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,15 +12,11 @@ import java.util.Map;
 
 import annotations.Alias;
 import main.StringRoutines;
+import main.grammar.Instance;
+import main.grammar.Symbol;
 
-//-----------------------------------------------------------------------------
+public class Call {
 
-/**
- * Instance of an item actually compiled.
- * @author cambolbro and matthew.stephenson
- */
-public class Call
-{
 	public enum CallType
 	{
 		Null,
@@ -39,7 +35,7 @@ public class Call
 	 */
 	//private final Instance instance;
 	private final Symbol symbol;
-	private Object object;
+	private final Object object;
 	private final String constant;
 	
 	/** Expected type for this call. */
@@ -100,11 +96,6 @@ public class Call
 	public Object object()
 	{
 		return object;
-	}
-	
-	public void setObject(Object object)
-	{
-		this.object = object;
 	}
 
 	public String constant()
