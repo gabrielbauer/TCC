@@ -10,6 +10,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.Calendar;
+import java.util.Collections;
+import java.lang.Math;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
 
 import compiler.Compiler;
 
@@ -41,18 +49,23 @@ import supplementary.experiments.EvalGamesThread;
  */
 
 public class Funcoes {
-	final static int MAX_MOVES 				= 2000;
-	final static String pastaBaseJogos		= System.getProperty("user.dir") + "/../gabriel_games_TCC/";
-	final static String arquivoNomesJogos 	= "listajogos.txt";
-	final static String arquivoListaAI 		= "listaAI.txt";
+	final static int MAX_MOVES 							= 2000;
+	final static String pastaBaseJogos					= System.getProperty("user.dir") + "/../gabriel_games_TCC/";
+	final static String pastaBaseExperimentos			= System.getProperty("user.dir") + "/../gabriel_games_TCC/experimentos/";
+	final static String arquivoNomesJogos 				= "listajogos.txt";
+	final static String arquivoListaAI 					= "listaAI.txt";
+	final static String arquivoResultadoAvaliacao		= "resultadoAvaliacao.txt";
+	static int indiceExperimentos 						= obterIndiceExperimento();
 	
-	final static List<String> ListaJogos 	= new ArrayList<String>();
-	final static List<String> listaAI 		= new ArrayList<String>();
+	final static List<String> listaJogos 				= new ArrayList<String>();
+	final static List<String> listaAI 					= new ArrayList<String>();
+	final static List<String> listaResultados			= new ArrayList<String>();
 	
-	final static List<String> listaTerminaisNumericos = new ArrayList<String>(Arrays.asList(
+	final static List<String> listaTerminaisNumericos 	= new ArrayList<String>(Arrays.asList(
 	"Integer", "DimConstant", "IntConstant"));
 	//, "Value", "BooleanConstant", "Boolean"
-	final static List<String> listaTerminaisUnicos = new ArrayList<String>();
+	final static List<String> listaTerminaisUnicos 		= new ArrayList<String>();
+	final static List<String> evaluationOutput 			= new ArrayList<String>();
 	
 	/**
 	 * @param nome: nome do jogo.lud. Deve se encontrar na pasta gabriel_games_TCC.
@@ -112,33 +125,14 @@ public class Funcoes {
 			Scanner myReader = new Scanner(myObj);
 			while (myReader.hasNextLine()) {
 				String data = myReader.nextLine();
-				ListaJogos.add(data);
+				listaJogos.add(data);
 			}
 			myReader.close();
 		}
 		catch(FileNotFoundException e){
 			e.printStackTrace();
 		}
-		return ListaJogos;
-	}
-	
-	public final static boolean salvarJogo(String nomeJogo, Description description) {
-		final String caminhoArquivo = pastaBaseJogos + nomeJogo + ".lud";
-		try {
-			FileWriter myWriter = new FileWriter(caminhoArquivo, true);
-			for(String ludeme:description.callTree().ludemeFormat(20)) {
-				myWriter.write(ludeme);
-				myWriter.write("\n");
-			}
-
-			myWriter.close();
-			System.out.println("Successfully wrote to the file.");
-			return true;
-		} catch (IOException e) {
-			System.out.println("An error occurred.");
-			e.printStackTrace();
-			return false;
-		}
+		return listaJogos;
 	}
 	
 	public final static ArrayList<Description> carregarListaJogos(final List<String> ListaJogos) {
@@ -152,6 +146,102 @@ public class Funcoes {
 		
 		return ListaDescricoesJogos;
 	}
+
+	public final static List<String> carregarResultadoAvaliacao(){
+		
+		int numeroExperimento = indiceExperimentos;
+		
+		final String caminho = pastaBaseExperimentos + String.valueOf(numeroExperimento) + "/" + arquivoResultadoAvaliacao;
+		
+		try {
+			File myObj = new File(caminho);
+			Scanner myReader = new Scanner(myObj);
+			System.out.println("******************************");
+			System.out.println("[TCC] Resultado avaliação:");
+			while (myReader.hasNextLine()) {
+				String data = myReader.nextLine();
+				System.out.println(data);
+				listaResultados.add(data);
+			}
+			myReader.close();
+			System.out.println("******************************");
+		}
+		catch(FileNotFoundException e){
+			e.printStackTrace();
+		}
+		return listaResultados;
+	}
+	
+	public final static boolean salvarJogo(String nomeJogo, Description description, String pastaExperimento) {
+		final String caminhoArquivo = pastaExperimento + nomeJogo + ".lud";
+		try {
+			FileWriter myWriter = new FileWriter(caminhoArquivo, false);
+			
+			for(String ludeme:description.callTree().ludemeFormat(20)) {
+				myWriter.write(ludeme);
+				myWriter.write("\n");
+			}
+
+			myWriter.close();
+			System.out.println("[TCC] Jogo salvo com sucesso.\n");
+			return true;
+		} catch (IOException e) {
+			System.out.println("[TCC] Erro durante salvamento do jogo.\n");
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	public final static String gerarNomeArquivo() {
+		String nomeArquivo = "";
+		
+		Calendar calendar = Calendar.getInstance();
+		
+		nomeArquivo+= calendar.get(Calendar.YEAR);
+		nomeArquivo+="_";
+		nomeArquivo+= calendar.get(Calendar.MONTH);
+		nomeArquivo+="_";
+		nomeArquivo+= calendar.get(Calendar.DAY_OF_MONTH);
+		nomeArquivo+="_";
+		nomeArquivo+= calendar.get(Calendar.HOUR_OF_DAY);
+		nomeArquivo+="_";
+		nomeArquivo+= calendar.get(Calendar.MINUTE);
+		nomeArquivo+="_";
+		nomeArquivo+= calendar.get(Calendar.SECOND);
+		
+		System.out.println("[TCC] Jogo: " + nomeArquivo + ".lud\n");
+		
+		return nomeArquivo;
+	}
+	
+	public final static int obterIndiceExperimento() {
+		final File[] experimentos = new File(pastaBaseExperimentos).listFiles();
+		
+		final List<Integer> experimentosInt = new ArrayList<Integer>();
+		
+		for(File arquivo : experimentos) {
+			if(arquivo.isDirectory()){
+				experimentosInt.add(Integer.valueOf(arquivo.getName()));
+			}
+		}
+		System.out.println(experimentosInt.toString());
+		Collections.sort(experimentosInt);
+		System.out.println(experimentosInt.toString());
+		final int indice = experimentosInt.get(experimentosInt.size() - 1) + 1;
+		return indice;
+	}
+	
+	public final static String criarDiretorioExperimento() {
+		try {
+			final int indiceExperimento = indiceExperimentos;
+			final String path = pastaBaseExperimentos + indiceExperimento + "/";
+			Files.createDirectory(FileSystems.getDefault().getPath(path));
+			return path;
+		} catch(IOException e) {
+			 e.printStackTrace();
+			 return "";
+	    }
+	}
 	
 	public final static void avaliarJogo(Game game, final Evaluation evaluation, final Report report, final List<String> options,
 		final int numberTrials, final int maxTurns, final double thinkTime, final List<Metric> metricsToEvaluate, 
@@ -163,6 +253,7 @@ public class Funcoes {
 		}
 		
 		final String gameName = game.name();
+		System.out.println("[TCC] Iniciando análise.");
 		final EvalGamesThread evalThread = 	EvalGamesThread.construct
 				(
 					evaluation, report, game, options, AIName, 
@@ -172,16 +263,15 @@ public class Funcoes {
 		
 		evalThread.setDaemon(true);
 		evalThread.run();
-		
-	}
-	
-	public static void salvarLog() {
-			
+		if(!evalThread.isAlive()) {
+			System.out.println("[TCC] Avaliação terminada.\n");
+			carregarResultadoAvaliacao();
+		}
 	}
 		
 	public static void mostrarListaAI() {
 		if(!listaAI.isEmpty()) {
-			System.out.println("Lista IAs:");
+			System.out.println("[TCC] Lista IAs:");
 			int indice = 1;
 			for(String nomeAI : listaAI) {
 				System.out.println(indice + ": " + nomeAI);
@@ -189,13 +279,13 @@ public class Funcoes {
 			}
 		}
 		else {
-			System.out.println("Lista de IAs não inicializada.");
+			System.out.println("[TCC] Lista de IAs não inicializada.\n");
 		}
 	}
 	
 	public static String selecionarAI(){
 		mostrarListaAI();
-		System.out.println("Selecione uma IA: ");
+		System.out.println("[TCC] Selecione uma IA: ");
 		Scanner objeto = new Scanner(System.in);
 	    int opcao = Integer.valueOf(objeto.nextLine());  // Read user input
 	    objeto.close();
@@ -203,26 +293,26 @@ public class Funcoes {
 	    return listaAI.get(opcao - 1);
 	}
 	
-	public static void criarAnalise(ArrayList<Description> jogosCarregados, String nomeAI) {
+	public static void criarAnalise(Description description, String nomeAI, int numeroTentativas, int maximoTurnos) {
 		final Report report = new Report();
 		int indice = 0;
 		
-		for (final Description description : jogosCarregados) {
+		//for (final Description description : jogosCarregados) {
 		
-			final Game game = Funcoes.carregarJogoPorDescricao(description);
-			final Evaluation evaluation = new Evaluation();
-			final List<String> options = new ArrayList<String>();
-			final int numberTrials = 1;
-			final int maxTurns = 60;
-			final double thinkTime = 0.5;
-			final List<Metric> metricsToEvaluate = new Evaluation().dialogMetrics();
-			final ArrayList<Double> weights = new ArrayList<Double>();
-			final boolean useDatabaseGames = false;
-			
-			avaliarJogo(game, evaluation, report, options, numberTrials, maxTurns, thinkTime,
-					metricsToEvaluate, weights, nomeAI, useDatabaseGames);
+		final Game game = Funcoes.carregarJogoPorDescricao(description);
+		final Evaluation evaluation = new Evaluation();
+		final List<String> options = new ArrayList<String>();
+		final int numberTrials = numeroTentativas;
+		final int maxTurns = maximoTurnos;
+		final double thinkTime = 0.5;
+		final List<Metric> metricsToEvaluate = new Evaluation().dialogMetrics();
+		final ArrayList<Double> weights = new ArrayList<Double>();
+		final boolean useDatabaseGames = false;
 		
-		}
+		avaliarJogo(game, evaluation, report, options, numberTrials, maxTurns, thinkTime,
+				metricsToEvaluate, weights, nomeAI, useDatabaseGames);
+		
+		//}
 	}
 	
 	public static void imprimirTokenTree(Description description) {
@@ -240,7 +330,7 @@ public class Funcoes {
 			if(arg.type() == CallType.Terminal) {
 				verificarTerminalLista(arg.symbol().name());
 				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
-					System.out.println(arg.symbol().name() + ": "+ arg.object().toString());
+					//System.out.println(arg.symbol().name() + ": "+ arg.object().toString());
 				}
 			}
 		}
@@ -256,11 +346,27 @@ public class Funcoes {
 			}
 			if(arg.type() == CallType.Terminal) {
 				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
-					Object obj = (Object) 2;
+					int sinal = 1;
+					final int valorSimbolo = Integer.parseInt(arg.object().toString());
+					
+					if(valorSimbolo < 0) {
+						sinal = -1;
+					}
+					int novoValor = gerarInteiro(Integer.parseInt(arg.object().toString()));
+					if (novoValor == 0) {
+						novoValor = gerarInteiro(3)*sinal;
+					}
+					//System.out.println("Setting " + arg.object().toString() + " to " + novoValor);
+					
+					Object obj = (Object) novoValor;
 					arg.setObject(obj);
 				}
 			}
 		}
+	}
+	
+	public static Call obterCallTree(Description descricao) {
+		return descricao.callTree();
 	}
 	
 	public static void verificarTerminalLista(String terminal) {
@@ -277,115 +383,22 @@ public class Funcoes {
 	
 	public static void mostrarListaTerminais() {
 		if(listaTerminaisUnicos.isEmpty()) {
-			System.out.println("Lista de terminais não inicializada.");
+			System.out.println("[TCC] Lista de terminais não inicializada.");
 		}
 		else {
 			System.out.println("******************************");
-			System.out.println("Lista de terminais sem repetição");
+			System.out.println("[TCC] Lista de terminais sem repetição");
 			for (String terminal : listaTerminaisUnicos) {
 				System.out.println(terminal);
 			}
 			System.out.println("******************************");
 		}
 	}
-
-	//TODO checar se posso excluir.
 	
-	// ************************************ COPY PASTE ************************************
-	
-	// @return Whether a trial of the game can be played without crashing.
-	public static boolean isFunctionalAndWithOnlyDecision(final Game game)
-	{
-		final Context context = new Context(game, new Trial(game));
-		game.start(context);
-		Trial trial = null;
-		try
-		{
-			trial = game.playout
-					(
-						context, null, 1.0, null, 0, MAX_MOVES, 
-						ThreadLocalRandom.current()
-					);
-		}
-		catch(final Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		if(trial == null)
-			return false;
-		
-		for(final Move m : trial.generateCompleteMovesList())
-			if(!m.isDecision())
-				return false;
-		
-		return true;	
-	}
-	
-	// @return Whether a trial of the game can be played without crashing.
-	public static boolean isFunctional(final Game game)
-	{
-		final Context context = new Context(game, new Trial(game));
-		game.start(context);
-		Trial trial = null;
-		try
-		{
-			trial = game.playout
-					(
-						context, null, 1.0, null, 0, MAX_MOVES, 
-						ThreadLocalRandom.current()
-					);
-		}
-		catch(final Exception e)
-		{
-			e.printStackTrace();
-		}
-		return trial != null; 		
-	}
-
-	/**
-	 * @return Whether the game is basically playable, i.e. more trials are of
-	 *         reasonable length than not. A trial is of reasonable length if it
-	 *         lasts at least 2 * num_players moves and ends before 90% of MAX_MOVES are reached.
-	 */
-	public static boolean isPlayable(final Game game)
-	{
-		final Context context = new Context(game, new Trial(game));
-		
-		final int NUM_TRIALS = 10;
-		
-		int numResults = 0;
-		
-		for (int t = 0; t < NUM_TRIALS; t++)
-		{		
-			game.start(context);
-			Trial trial = null;
-			try
-			{
-				trial = game.playout
-						(
-							context, null, 1.0, null, 0, MAX_MOVES, 
-							ThreadLocalRandom.current()
-						);
-			}
-			catch(final Exception e)
-			{
-				e.printStackTrace();
-			}
-			
-			//System.out.println(trial.numMoves() + " moves in " + trial.numberOfTurns() + " turns.");
-			
-			if (trial == null)
-				return false;
-
-			final int minMoves = 2 * game.players().count();
-			final int maxMoves = MAX_MOVES * 9 / 10;
-			
-			if (trial.numMoves() >= minMoves && trial.numMoves() <= maxMoves)
-				numResults++;
-		}
-		
-		return numResults >= NUM_TRIALS / 2; 		
+	public static int gerarInteiro(int valorOriginal) {
+		double min = valorOriginal * 0.4;
+		double max = valorOriginal * 1.6;
+		return (int) (Math.random() * (max - min + 1) + min);
 	}
 
 }

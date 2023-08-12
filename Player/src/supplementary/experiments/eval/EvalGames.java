@@ -9,7 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.rng.RandomProviderState;
 import org.apache.commons.rng.core.RandomProviderDefaultState;
@@ -22,6 +25,7 @@ import main.CommandLineArgParse.ArgOption;
 import main.CommandLineArgParse.OptionTypes;
 import main.Constants;
 import main.FileHandling;
+import main.grammar.Description;
 import main.grammar.Report;
 import main.options.Ruleset;
 import main.options.UserSelections;
@@ -45,7 +49,10 @@ import utils.DBGameInfo;
  */
 public class EvalGames
 {
-	final static String outputFilePath = "EvalResults.csv";		//"../Mining/res/evaluation/Results.csv";
+	final static String outputFilePath = "EvalResults.csv";		//"../Miningstatic List<String> evaluationOutput = new ArrayList<String>();
+	final static String pastaBaseExperimentos = System.getProperty("user.dir") + "/../gabriel_games_TCC/experimentos/";
+	final static String arquivoResultadoAvaliacao		= "resultadoAvaliacao.txt";
+	static int indiceExperimentos 						= obterIndiceExperimento();
 	
 	//-------------------------------------------------------------------------
 	
@@ -417,6 +424,8 @@ public class EvalGames
 			}
 		}
 		
+		saveEvaluation(String.valueOf(finalScore) + "\n", true);
+		
 		analysisPanelString += "Final Score: " + df.format(finalScore) + "\n\n";
 				
 		try
@@ -432,6 +441,23 @@ public class EvalGames
 		return csvOutputString.substring(0, csvOutputString.length()-1) + "\n";
 	}
 	
+	
+	public final static void saveEvaluation(String texto, boolean append) {
+		int numeroExperimento = indiceExperimentos;
+		
+		final String caminho = pastaBaseExperimentos + String.valueOf(numeroExperimento) + "/" + arquivoResultadoAvaliacao;
+		try {
+			FileWriter myWriter = new FileWriter(caminho, append);
+			myWriter.write(texto);
+			myWriter.close();
+			System.out.println("[TCC] Avaliacao salva.");
+			//return true;
+		} catch (IOException e) {
+			System.out.println("[TCC] Falha ao salvar avaliação.");
+			e.printStackTrace();
+			//return false;
+		}
+	}
 	//-------------------------------------------------------------------------
 	
 	/**
@@ -488,5 +514,23 @@ public class EvalGames
 		final boolean useDatabaseGames = argParse.getValueBool("--useDatabaseGames");
 		
 		evaluateAllGames(null, numberTrials, maxTurns, thinkTime, AIName, useDatabaseGames);
+	}
+	
+	// TCC Gabriel
+	public final static int obterIndiceExperimento() {
+		final File[] experimentos = new File(pastaBaseExperimentos).listFiles();
+		
+		final List<Integer> experimentosInt = new ArrayList<Integer>();
+		
+		for(File arquivo : experimentos) {
+			if(arquivo.isDirectory()){
+				experimentosInt.add(Integer.valueOf(arquivo.getName()));
+			}
+		}
+		System.out.println(experimentosInt.toString());
+		Collections.sort(experimentosInt);
+		System.out.println(experimentosInt.toString());
+		final int indice = experimentosInt.get(experimentosInt.size() - 1);
+		return indice;
 	}
 }

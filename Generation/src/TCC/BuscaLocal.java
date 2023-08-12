@@ -14,16 +14,43 @@ public class BuscaLocal {
 	
 	final static List<String> listaNomesJogos = Funcoes.carregarListaJogos();
 	final static List<String> listaAI = Funcoes.carregarListaAI();
-	final static ArrayList<Description> jogosCarregados = Funcoes.carregarListaJogos(listaNomesJogos);
+	final static List<Description> jogosCarregados = Funcoes.carregarListaJogos(listaNomesJogos);
 	
 	public static void alterarParametro(Description description) {
-		Funcoes.imprimirTokenTree(jogosCarregados.get(0));
-		jogosCarregados.get(0).callTree().ludemeFormat(20).toString().toString();
-		for(Token token : description.tokenForest().tokenTrees()) {
-			if(token.isTerminal()) {
+		//Funcoes.imprimirTokenTree(jogosCarregados.get(0));
+		//jogosCarregados.get(2).callTree().ludemeFormat(20).toString().toString();
+		//for(Token token : description.tokenForest().tokenTrees()) {
+			//if(token.isTerminal()) {
 				//System.out.println(token.arguments().toString().toString());
-			}
+			//}
+		//}
+	}
+	
+	public static void realizarExperimento(String nomeAI) {
+		Funcoes.preencherListaTerminais(jogosCarregados);
+		
+		final String diretorioExperimento = Funcoes.criarDiretorioExperimento();
+		if(diretorioExperimento == "") {
+			return;
 		}
+		
+		//for(int indiceJogo = 0; indiceJogo < 1; indiceJogo++) {
+		for(int i = 0; i < 2; i++) {
+			Description descricaoJogo = jogosCarregados.get(0);
+			//Funcoes.alterarCallTree(Funcoes.obterCallTree(descricaoJogo));
+			if(Funcoes.salvarJogo(Funcoes.gerarNomeArquivo(), jogosCarregados.get(0), diretorioExperimento)) {
+				
+			}
+			Funcoes.criarAnalise(jogosCarregados.get(0), nomeAI, 1, 40);
+		}
+		//}
+		
+
+		//Funcoes.mostrarListaTerminais();
+		
+		//alterarParametro(jogosCarregados.get(0));
+		//System.out.println(jogosCarregados.get(0).callTree().ludemeFormat(10));
+		
 	}
 
 	public static void main(String[] args) {
@@ -32,19 +59,9 @@ public class BuscaLocal {
 		if (debug) {
 			nomeAI = Funcoes.selecionarAI();
 		}
-			
-		//System.out.println("AI selecionada: " + nomeAI);
 		
 		long tempoInicial = System.nanoTime();
-		
-		System.out.println("Preenchendo a lista com terminais de " + jogosCarregados.size() + " jogos");
-		Funcoes.preencherListaTerminais(jogosCarregados);
-		//Funcoes.mostrarListaTerminais();
-		Funcoes.alterarCallTree(jogosCarregados.get(0).callTree());
-		//alterarParametro(jogosCarregados.get(0));
-		System.out.println(jogosCarregados.get(0).callTree().ludemeFormat(10));
-		
-		Funcoes.salvarJogo("PORFAVORFUNCIONA", jogosCarregados.get(0));
+		realizarExperimento(nomeAI);
 		long tempoExecucao = System.nanoTime() - tempoInicial;
 		System.out.println("Tempo decorrido: " + tempoExecucao/1_000_000_000 + " s");
 	}
