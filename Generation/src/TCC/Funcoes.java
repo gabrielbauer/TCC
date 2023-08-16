@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -66,6 +67,13 @@ public class Funcoes {
 	//, "Value", "BooleanConstant", "Boolean"
 	final static List<String> listaTerminaisUnicos 		= new ArrayList<String>();
 	final static List<String> evaluationOutput 			= new ArrayList<String>();
+	static List<Object> listaTerminaisObjetos 			= new ArrayList<Object>();
+	
+	//Variáveis globais para busca local
+	static List<String> listaTerminaisJogo 				= new ArrayList<String>();
+	static int indiceElementoCallTree 					= 0;
+	static int indiceAtualElementoCallTree 				= 0;
+	static Object elementoAlterado 						= new Object();
 	
 	/**
 	 * @param nome: nome do jogo.lud. Deve se encontrar na pasta gabriel_games_TCC.
@@ -171,6 +179,38 @@ public class Funcoes {
 		}
 		return listaResultados;
 	}
+
+	public final static void listaParametrosCallTree(Call calltree){
+		
+		percorrerCallTree(calltree);
+		
+	}
+	
+	public final static float carregarScoreAvaliacao(){
+		
+		int numeroExperimento = indiceExperimentos;
+		
+		float score = 0;
+		
+		final String caminho = pastaBaseExperimentos + String.valueOf(numeroExperimento) + "/" + arquivoResultadoAvaliacao;
+		
+		try {
+			File myObj = new File(caminho);
+			Scanner myReader = new Scanner(myObj);
+			while (myReader.hasNextLine()) {
+				score = Float.valueOf(myReader.nextLine());
+			}
+			myReader.close();
+		}
+		catch(FileNotFoundException e){
+			e.printStackTrace();
+		}
+		return score;
+	}
+	
+	//public final static List<Call> carregarParametrosBuscaLocal(){
+		
+	//}
 	
 	public final static boolean salvarJogo(String nomeJogo, Description description, String pastaExperimento) {
 		final String caminhoArquivo = pastaExperimento + nomeJogo + ".lud";
@@ -189,6 +229,19 @@ public class Funcoes {
 			System.out.println("[TCC] Erro durante salvamento do jogo.\n");
 			e.printStackTrace();
 			return false;
+		}
+	}
+	
+	public final static void separarAvaliacao() {
+		int numeroExperimento = indiceExperimentos;
+		
+		final String caminho = pastaBaseExperimentos + String.valueOf(numeroExperimento) + "/" + arquivoResultadoAvaliacao;
+		try {
+			FileWriter myWriter = new FileWriter(caminho, true);
+			myWriter.write("\n");
+			myWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -224,9 +277,7 @@ public class Funcoes {
 				experimentosInt.add(Integer.valueOf(arquivo.getName()));
 			}
 		}
-		System.out.println(experimentosInt.toString());
 		Collections.sort(experimentosInt);
-		System.out.println(experimentosInt.toString());
 		final int indice = experimentosInt.get(experimentosInt.size() - 1) + 1;
 		return indice;
 	}
@@ -330,7 +381,29 @@ public class Funcoes {
 			if(arg.type() == CallType.Terminal) {
 				verificarTerminalLista(arg.symbol().name());
 				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
-					//System.out.println(arg.symbol().name() + ": "+ arg.object().toString());
+					System.out.println(arg.symbol().name() + ": "+ arg.object().toString());	
+				}
+			}
+		}
+	}
+	
+	public static void completarListaTerminaisCallTree(Call root) {
+		
+		for(Call arg : root.args()) {
+			if(arg.type() == CallType.Class) {
+				completarListaTerminaisCallTree(arg);
+			}
+			if(arg.type() == CallType.Array) {
+				completarListaTerminaisCallTree(arg);
+			}
+			if(arg.type() == CallType.Terminal) {
+				verificarTerminalLista(arg.symbol().name());
+				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
+					listaTerminaisObjetos.add(arg);
+					//System.out.print(arg.toString());
+					String elemento = "";
+					elemento += arg.expected().getSimpleName() + ":" + arg.object().toString();
+					listaTerminaisJogo.add(elemento);
 				}
 			}
 		}
@@ -346,23 +419,47 @@ public class Funcoes {
 			}
 			if(arg.type() == CallType.Terminal) {
 				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
-					int sinal = 1;
-					final int valorSimbolo = Integer.parseInt(arg.object().toString());
-					
-					if(valorSimbolo < 0) {
-						sinal = -1;
+					if(arg.equals(elementoAlterado)) {
+						if(indiceAtualElementoCallTree == indiceElementoCallTree) {
+							//System.out.println("[TCC] Alterando " + arg.toString());
+							int sinal = 1;
+							final int valorSimbolo = Integer.parseInt(arg.object().toString());
+							
+							if(valorSimbolo < 0) {
+								sinal = -1;
+							}
+							int novoValor = gerarInteiro(Integer.parseInt(arg.object().toString()));
+							if (novoValor == 0) {
+								novoValor = gerarInteiro(3)*sinal;
+							}
+							//System.out.println("Setting " + arg.object().toString() + " to " + novoValor);
+							
+							Object obj = (Object) novoValor;
+							arg.setObject(obj);
+							break;
+						}
+						else {
+							indiceAtualElementoCallTree += 1;
+						}
 					}
-					int novoValor = gerarInteiro(Integer.parseInt(arg.object().toString()));
-					if (novoValor == 0) {
-						novoValor = gerarInteiro(3)*sinal;
-					}
-					//System.out.println("Setting " + arg.object().toString() + " to " + novoValor);
-					
-					Object obj = (Object) novoValor;
-					arg.setObject(obj);
 				}
 			}
 		}
+	}
+	
+	public static List<Object> obterListaTerminaisJogo(Call root){
+		listaTerminaisObjetos.clear();
+		completarListaTerminaisCallTree(root);
+		return listaTerminaisObjetos;
+	}
+	
+	public static Call alterarTerminalCallTree(Call root, Object elementoEscolhido, int posicaoElemento){
+		indiceElementoCallTree = posicaoElemento;
+		indiceAtualElementoCallTree = 0;
+		elementoAlterado = elementoEscolhido;
+		//System.out.println("Alterando o elemento na posição " + indiceElementoCallTree);
+		alterarCallTree(root);
+		return root;
 	}
 	
 	public static Call obterCallTree(Description descricao) {
@@ -399,6 +496,12 @@ public class Funcoes {
 		double min = valorOriginal * 0.4;
 		double max = valorOriginal * 1.6;
 		return (int) (Math.random() * (max - min + 1) + min);
+	}
+	
+	public static int escolherNumeroIntervaloLista(int quantidadeElementos) {
+		Random rand = new Random();
+		int posicao = rand.nextInt(quantidadeElementos);
+		return posicao;
 	}
 
 }

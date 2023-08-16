@@ -1,5 +1,1 @@
-nightrider.lud
-Annuvin.lud
-ConnectFour.lud
-Bagha Guti.lud
-Ashanti Alignment Game.lud
+Damas.lud

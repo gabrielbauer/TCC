@@ -52,6 +52,7 @@ public class EvalGames
 	final static String outputFilePath = "EvalResults.csv";		//"../Miningstatic List<String> evaluationOutput = new ArrayList<String>();
 	final static String pastaBaseExperimentos = System.getProperty("user.dir") + "/../gabriel_games_TCC/experimentos/";
 	final static String arquivoResultadoAvaliacao		= "resultadoAvaliacao.txt";
+	final static String arquivoLogAvaliacoes			= "logAvaliacoes.txt";
 	static int indiceExperimentos 						= obterIndiceExperimento();
 	
 	//-------------------------------------------------------------------------
@@ -424,7 +425,10 @@ public class EvalGames
 			}
 		}
 		
-		saveEvaluation(String.valueOf(finalScore) + "\n", true);
+		salvarAvaliacao(String.valueOf(finalScore), false);
+		salvarLogAvaliacao(String.valueOf(finalScore), true);
+		
+		//saveEvaluation(String.valueOf(finalScore) + "\n", false);
 		
 		analysisPanelString += "Final Score: " + df.format(finalScore) + "\n\n";
 				
@@ -442,7 +446,7 @@ public class EvalGames
 	}
 	
 	
-	public final static void saveEvaluation(String texto, boolean append) {
+	public final static void salvarAvaliacao(String texto, boolean append) {
 		int numeroExperimento = indiceExperimentos;
 		
 		final String caminho = pastaBaseExperimentos + String.valueOf(numeroExperimento) + "/" + arquivoResultadoAvaliacao;
@@ -454,6 +458,23 @@ public class EvalGames
 			//return true;
 		} catch (IOException e) {
 			System.out.println("[TCC] Falha ao salvar avaliação.");
+			e.printStackTrace();
+			//return false;
+		}
+	}
+	
+	public final static void salvarLogAvaliacao(String texto, boolean append) {
+		int numeroExperimento = indiceExperimentos;
+		
+		final String caminho = pastaBaseExperimentos + String.valueOf(numeroExperimento) + "/" + arquivoLogAvaliacoes;
+		try {
+			FileWriter myWriter = new FileWriter(caminho, append);
+			myWriter.write(texto + "\n");
+			myWriter.close();
+			System.out.println("[TCC] Log avaliação salvo.");
+			//return true;
+		} catch (IOException e) {
+			System.out.println("[TCC] Falha ao salvar log avaliação.");
 			e.printStackTrace();
 			//return false;
 		}
@@ -527,9 +548,7 @@ public class EvalGames
 				experimentosInt.add(Integer.valueOf(arquivo.getName()));
 			}
 		}
-		System.out.println(experimentosInt.toString());
 		Collections.sort(experimentosInt);
-		System.out.println(experimentosInt.toString());
 		final int indice = experimentosInt.get(experimentosInt.size() - 1);
 		return indice;
 	}
