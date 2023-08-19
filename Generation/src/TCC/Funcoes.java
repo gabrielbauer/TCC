@@ -278,8 +278,13 @@ public class Funcoes {
 			}
 		}
 		Collections.sort(experimentosInt);
-		final int indice = experimentosInt.get(experimentosInt.size() - 1) + 1;
-		return indice;
+		if(experimentosInt.size() == 0) {
+			return 0;
+		}
+		else {
+			final int indice = experimentosInt.get(experimentosInt.size() - 1) + 1;
+			return indice;
+		}
 	}
 	
 	public final static String criarDiretorioExperimento() {
@@ -356,7 +361,7 @@ public class Funcoes {
 		final int numberTrials = numeroTentativas;
 		final int maxTurns = maximoTurnos;
 		final double thinkTime = 0.5;
-		final List<Metric> metricsToEvaluate = new Evaluation().dialogMetrics();
+		final List<Metric> metricsToEvaluate = new Evaluation().dialogMetrics();//.subList(0, 7)
 		final ArrayList<Double> weights = new ArrayList<Double>();
 		final boolean useDatabaseGames = false;
 		

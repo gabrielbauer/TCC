@@ -1,12 +1,9 @@
 package TCC;
 
-import java.lang.System;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import main.grammar.Description;
-import main.grammar.Token;
 
 public class BuscaLocal {
 	
@@ -42,23 +39,40 @@ public class BuscaLocal {
 		int terminalAlterado = Funcoes.escolherNumeroIntervaloLista(listaTerminaisIguais.size());
 		descricao.setCallTree(Funcoes.alterarTerminalCallTree(Funcoes.obterCallTree(descricao), elementoEscolhido, terminalAlterado));
 		//System.out.println("[TCC] Call tree final:");
-		Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
+		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
 		//System.out.println("**************************************");
 		
 		return descricao;
 	}
 	
-	public static void realizarExperimento(Description descricao, String nomeAI) {
-		
-		int limiteBusca = 10;
-		
+	public static void analisarJogoIndividual(Description descricao, String nomeAI) {
 		final String diretorioExperimento = Funcoes.criarDiretorioExperimento();
 		if(diretorioExperimento == "") {
 			return;
 		}
 		
 		Description descricaoAtual = descricao;
-		Funcoes.criarAnalise(descricaoAtual, nomeAI, 5, 40);
+		Funcoes.criarAnalise(descricaoAtual, nomeAI, 15, 40);
+		float scoreAtual = Funcoes.carregarScoreAvaliacao();
+		System.out.println("Score joguinho: " + scoreAtual);
+	}
+	
+	public static void realizarExperimento(String nomeAI) {
+		
+		for(Description descricao : jogosCarregados) {
+			hillClimbing(descricao, nomeAI, 20); 
+		}
+
+	}
+	
+	public static void hillClimbing(Description descricao, String nomeAI, int numeroIteracoes) {
+		final String diretorioExperimento = Funcoes.criarDiretorioExperimento();
+		if(diretorioExperimento == "") {
+			return;
+		}
+		
+		Description descricaoAtual = descricao;
+		Funcoes.criarAnalise(descricaoAtual, nomeAI, 10, 40);
 		float scoreAtual = Funcoes.carregarScoreAvaliacao();
 		
 		if(Funcoes.salvarJogo(Funcoes.gerarNomeArquivo(), descricaoAtual, diretorioExperimento)) {
@@ -67,43 +81,35 @@ public class BuscaLocal {
 		
 		System.out.println("Score inicial: " + scoreAtual);
 		
-		int buscaAtual = 0;
 		float scoreBusca = 0;
 		
-		while(scoreBusca < scoreAtual || buscaAtual < limiteBusca) {
-			Description descricaoBusca = alterarParametro(descricao);
+		for(int iteracao = 0; iteracao <= numeroIteracoes; iteracao++) {
+			System.out.println("Iteração " + iteracao);
+			Description descricaoBusca = alterarParametro(descricaoAtual);
 			if(Funcoes.salvarJogo(Funcoes.gerarNomeArquivo(), descricaoBusca, diretorioExperimento)) {
 				
 			}
-			Funcoes.criarAnalise(descricaoBusca, nomeAI, 5, 40);
+			
+			Funcoes.criarAnalise(descricaoBusca, nomeAI, 10, 40);
 			scoreBusca = Funcoes.carregarScoreAvaliacao();
-			System.out.println("Score [" +buscaAtual+ "]: "+ scoreBusca);
+		
 			if(scoreBusca > scoreAtual) {
-				descricao = descricaoBusca;
+				System.out.println("[TCC] " + scoreBusca + " > " + scoreAtual);
+				descricaoAtual = descricaoBusca;
 				scoreAtual = scoreBusca;
 			}
-			buscaAtual++;
 		}
-				
 	}
-
+	
 	public static void main(String[] args) {
 		String nomeAI = "UCT";
 		
 		if (debug) {
 			nomeAI = Funcoes.selecionarAI();
 		}
-		
-		Description descricao = jogosCarregados.get(0);
 
 		long tempoInicial = System.nanoTime();
-		
-		//alterarParametro(descricao);
-		realizarExperimento(descricao, nomeAI);
-		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
-		
-		//final List<Object> listaTerminais = Funcoes.obterListaTerminaisJogo(Funcoes.obterCallTree(descricao));
-		
+		realizarExperimento(nomeAI);
 		long tempoExecucao = System.nanoTime() - tempoInicial;
 		
 		System.out.println("Tempo decorrido: " + tempoExecucao/1_000_000_000 + " s");

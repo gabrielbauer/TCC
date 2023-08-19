@@ -1,1 +1,7 @@
-Damas.lud
+Al-Qirq.lud
+Dig-Dig.lud
+Bravalath.lud
+Capture-the-Queen.lud
+Andantino.lud
+Bagha-Guti.lud
+Aralzaa.lud
