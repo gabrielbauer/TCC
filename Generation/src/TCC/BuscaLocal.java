@@ -31,7 +31,7 @@ public class BuscaLocal {
 		//System.out.println("**************************************");
 		//System.out.println("[TCC] Call tree incial:");
 		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
-		for(int i = 0; i < 50; i++) {
+		for(int i = 0; i < 20; i++) {
 			int posicao = Funcoes.escolherNumeroIntervaloLista(listaTerminais.size());
 			
 			final List<Object> listaTerminaisIguais = new ArrayList<Object>();
@@ -103,7 +103,7 @@ public class BuscaLocal {
 	public static void realizarExperimento(String nomeAI) {
 		
 		for(Description descricao : jogosCarregados) {
-			hillClimbing(descricao, nomeAI, 30); 
+			hillClimbing(descricao, nomeAI, 2); 
 		}
 
 	}
@@ -115,7 +115,7 @@ public class BuscaLocal {
 		}
 		
 		Description descricaoAtual = descricao;
-		Funcoes.criarAnalise(descricaoAtual, nomeAI, 20, 40);
+		Funcoes.criarAnalise(descricaoAtual, nomeAI, 1, 40);
 		float scoreAtual = Funcoes.carregarScoreAvaliacao();
 		
 		if(Funcoes.salvarJogo(Funcoes.gerarNomeArquivo(), descricaoAtual, diretorioExperimento)) {
@@ -133,7 +133,7 @@ public class BuscaLocal {
 				
 			}
 			
-			Funcoes.criarAnalise(descricaoBusca, nomeAI, 20, 40);
+			Funcoes.criarAnalise(descricaoBusca, nomeAI, 1, 40);
 			scoreBusca = Funcoes.carregarScoreAvaliacao();
 		
 			if(scoreBusca > scoreAtual) {
@@ -152,8 +152,8 @@ public class BuscaLocal {
 		}
 
 		long tempoInicial = System.nanoTime();
-		//realizarExperimento(nomeAI);
-		funcaoParaTestes();
+		realizarExperimento(nomeAI);
+		//funcaoParaTestes();
 		long tempoExecucao = System.nanoTime() - tempoInicial;
 		
 		System.out.println("Tempo decorrido: " + tempoExecucao/1_000_000_000 + " s");

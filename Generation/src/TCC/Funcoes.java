@@ -237,19 +237,6 @@ public class Funcoes {
 		}
 	}
 	
-	public final static void separarAvaliacao() {
-		int numeroExperimento = indiceExperimentos;
-		
-		final String caminho = pastaBaseExperimentos + String.valueOf(numeroExperimento) + "/" + arquivoResultadoAvaliacao;
-		try {
-			FileWriter myWriter = new FileWriter(caminho, true);
-			myWriter.write("\n");
-			myWriter.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public final static String gerarNomeArquivo() {
 		String nomeArquivo = "";
 		
@@ -294,6 +281,7 @@ public class Funcoes {
 	
 	public final static String criarDiretorioExperimento() {
 		try {
+			indiceExperimentos = obterIndiceExperimento();
 			final int indiceExperimento = indiceExperimentos;
 			final String path = pastaBaseExperimentos + indiceExperimento + "/";
 			Files.createDirectory(FileSystems.getDefault().getPath(path));
@@ -419,7 +407,7 @@ public class Funcoes {
 		}
 	}
 	
-public static void completarListaTerminaisNumericosBooleanosCallTree(Call root) {
+	public static void completarListaTerminaisNumericosBooleanosCallTree(Call root) {
 		
 		for(Call arg : root.args()) {
 			if(arg.type() == CallType.Class) {
@@ -517,8 +505,8 @@ public static void completarListaTerminaisNumericosBooleanosCallTree(Call root) 
 	}
 	
 	public static int gerarInteiro(int valorOriginal) {
-		double min = valorOriginal * 0.4;
-		double max = valorOriginal * 1.6;
+		double min = valorOriginal * 0.2;
+		double max = valorOriginal * 1.8;
 		return (int) (Math.random() * (max - min + 1) + min);
 	}
 	

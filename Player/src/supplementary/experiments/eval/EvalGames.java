@@ -53,6 +53,7 @@ public class EvalGames
 	final static String pastaBaseExperimentos = System.getProperty("user.dir") + "/../gabriel_games_TCC/experimentos/";
 	final static String arquivoResultadoAvaliacao		= "resultadoAvaliacao.txt";
 	final static String arquivoLogAvaliacoes			= "logAvaliacoes.txt";
+	final static String arquivoLogAvaliacoesMetricas	= "logAvaliacoesMetricas.txt";
 	static int indiceExperimentos 						= obterIndiceExperimento();
 	
 	//-------------------------------------------------------------------------
@@ -137,6 +138,9 @@ public class EvalGames
 		final boolean useDatabaseGames
 	)
 	{
+		
+		String stringResultadoAvaliacao = "-\n";
+		
 		final Game game = (Game)Compiler.compile(originalGame.description(), new UserSelections(gameOptions), report, false);		
 		game.setMaxTurns(maxNumTurns);
 		
@@ -381,8 +385,16 @@ public class EvalGames
 		analysisPanelString += "\nTimeout likelihood: " + timeoutPercentage;
 		analysisPanelString += "\nAverage number of moves per game: " + df.format(sumNumMoves/(double)numGames);
 		
-		for (int i = 1; i < sumScores.length; i++)
+		//TCC
+		stringResultadoAvaliacao += "draws:"+String.valueOf(numDraws*100.0/numGames)+"\n";
+		stringResultadoAvaliacao += "timeouts:"+String.valueOf(numDraws*100.0/numGames)+"\n";
+		stringResultadoAvaliacao += "moves:"+String.valueOf(sumNumMoves/(double)numGames)+"\n";
+		
+		for (int i = 1; i < sumScores.length; i++) {
 			analysisPanelString += "\nPlayer " + (i) + " win rate: " + df.format(sumScores[i]*100.0/numGames) + "%";
+			stringResultadoAvaliacao += "winPlayer"+i+":"+String.valueOf(sumScores[i]*100.0/numGames);
+			stringResultadoAvaliacao += "\n";
+		}
 		
 		analysisPanelString += "\n\n";
 		
@@ -420,13 +432,16 @@ public class EvalGames
 			{
 				final double weight = weights.get(m).doubleValue();
 				analysisPanelString += metric.name() + ": " + df.format(score) + " (weight: " + weight + ")\n";
+				stringResultadoAvaliacao += metric.name()+":"+score+"\n";
 				finalScore += score.doubleValue() * weight;
 				csvOutputString += score + ",";
 			}
 		}
 		
-		salvarAvaliacao(String.valueOf(finalScore), false);
+		indiceExperimentos = obterIndiceExperimento();
+		salvarLogAvaliacaoMetricas(stringResultadoAvaliacao, true);
 		salvarLogAvaliacao(String.valueOf(finalScore), true);
+		salvarAvaliacao(String.valueOf(finalScore), false);
 		
 		//saveEvaluation(String.valueOf(finalScore) + "\n", false);
 		
@@ -479,6 +494,25 @@ public class EvalGames
 			//return false;
 		}
 	}
+	
+	public final static void salvarLogAvaliacaoMetricas(String texto, boolean append) {
+		int numeroExperimento = indiceExperimentos;
+		
+		final String caminho = pastaBaseExperimentos + String.valueOf(numeroExperimento) + "/" + arquivoLogAvaliacoesMetricas;
+		try {
+			FileWriter myWriter = new FileWriter(caminho, append);
+			texto.replace(" ", "");
+			myWriter.write(texto);
+			myWriter.close();
+			System.out.println("[TCC] Log avaliação e métricas salvo.");
+			//return true;
+		} catch (IOException e) {
+			System.out.println("[TCC] Falha ao salvar log avaliação.");
+			e.printStackTrace();
+			//return false;
+		}
+	}
+	
 	//-------------------------------------------------------------------------
 	
 	/**
