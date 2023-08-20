@@ -63,17 +63,22 @@ public class Funcoes {
 	final static List<String> listaResultados			= new ArrayList<String>();
 	
 	final static List<String> listaTerminaisNumericos 	= new ArrayList<String>(Arrays.asList(
-	"Integer", "DimConstant", "IntConstant"));
+	"Integer", "DimConstant", "IntConstant", "BooleanFunction"));
 	//, "Value", "BooleanConstant", "Boolean"
+	final static List<String> listaTerminaisNumericosBooleanos
+														= new ArrayList<String>(Arrays.asList(
+			"Integer", "DimConstant", "IntConstant", "BooleanConstant", "Boolean"));
 	final static List<String> listaTerminaisUnicos 		= new ArrayList<String>();
 	final static List<String> evaluationOutput 			= new ArrayList<String>();
 	static List<Object> listaTerminaisObjetos 			= new ArrayList<Object>();
 	
 	//Variáveis globais para busca local
-	static List<String> listaTerminaisJogo 				= new ArrayList<String>();
+	static List<String> listaTerminaisStringJogo		= new ArrayList<String>();
 	static int indiceElementoCallTree 					= 0;
 	static int indiceAtualElementoCallTree 				= 0;
 	static Object elementoAlterado 						= new Object();
+	static String stringObjetoAlterado  				= new String();
+	static int numeroElementosAlteradosJogo 			= 0;
 	
 	/**
 	 * @param nome: nome do jogo.lud. Deve se encontrar na pasta gabriel_games_TCC.
@@ -361,7 +366,7 @@ public class Funcoes {
 		final int numberTrials = numeroTentativas;
 		final int maxTurns = maximoTurnos;
 		final double thinkTime = 0.5;
-		final List<Metric> metricsToEvaluate = new Evaluation().dialogMetrics();//.subList(0, 7)
+		final List<Metric> metricsToEvaluate = new Evaluation().dialogMetrics().subList(0, 7);
 		final ArrayList<Double> weights = new ArrayList<Double>();
 		final boolean useDatabaseGames = false;
 		
@@ -385,21 +390,21 @@ public class Funcoes {
 			}
 			if(arg.type() == CallType.Terminal) {
 				verificarTerminalLista(arg.symbol().name());
-				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
+				if(listaTerminaisNumericosBooleanos.contains(arg.symbol().name())) {
 					System.out.println(arg.symbol().name() + ": "+ arg.object().toString());	
 				}
 			}
 		}
 	}
 	
-	public static void completarListaTerminaisCallTree(Call root) {
+	public static void completarListaTerminaisNumericosCallTree(Call root) {
 		
 		for(Call arg : root.args()) {
 			if(arg.type() == CallType.Class) {
-				completarListaTerminaisCallTree(arg);
+				completarListaTerminaisNumericosCallTree(arg);
 			}
 			if(arg.type() == CallType.Array) {
-				completarListaTerminaisCallTree(arg);
+				completarListaTerminaisNumericosCallTree(arg);
 			}
 			if(arg.type() == CallType.Terminal) {
 				verificarTerminalLista(arg.symbol().name());
@@ -408,7 +413,28 @@ public class Funcoes {
 					//System.out.print(arg.toString());
 					String elemento = "";
 					elemento += arg.expected().getSimpleName() + ":" + arg.object().toString();
-					listaTerminaisJogo.add(elemento);
+					listaTerminaisStringJogo.add(elemento);
+				}
+			}
+		}
+	}
+	
+public static void completarListaTerminaisNumericosBooleanosCallTree(Call root) {
+		
+		for(Call arg : root.args()) {
+			if(arg.type() == CallType.Class) {
+				completarListaTerminaisNumericosBooleanosCallTree(arg);
+			}
+			if(arg.type() == CallType.Array) {
+				completarListaTerminaisNumericosBooleanosCallTree(arg);
+			}
+			if(arg.type() == CallType.Terminal) {
+				verificarTerminalLista(arg.symbol().name());
+				if(listaTerminaisNumericosBooleanos.contains(arg.symbol().name())) {
+					listaTerminaisObjetos.add(arg);
+					String elemento = "";
+					elemento += arg.expected().getSimpleName() + ":" + arg.object().toString();
+					listaTerminaisStringJogo.add(elemento);
 				}
 			}
 		}
@@ -423,24 +449,10 @@ public class Funcoes {
 				alterarCallTree(arg);
 			}
 			if(arg.type() == CallType.Terminal) {
-				if(listaTerminaisNumericos.contains(arg.symbol().name())) {
+				if(listaTerminaisNumericosBooleanos.contains(arg.symbol().name())) {
 					if(arg.equals(elementoAlterado)) {
-						if(indiceAtualElementoCallTree == indiceElementoCallTree) {
-							//System.out.println("[TCC] Alterando " + arg.toString());
-							int sinal = 1;
-							final int valorSimbolo = Integer.parseInt(arg.object().toString());
-							
-							if(valorSimbolo < 0) {
-								sinal = -1;
-							}
-							int novoValor = gerarInteiro(Integer.parseInt(arg.object().toString()));
-							if (novoValor == 0) {
-								novoValor = gerarInteiro(3)*sinal;
-							}
-							//System.out.println("Setting " + arg.object().toString() + " to " + novoValor);
-							
-							Object obj = (Object) novoValor;
-							arg.setObject(obj);
+						if(indiceAtualElementoCallTree == indiceElementoCallTree && numeroElementosAlteradosJogo == 0) {
+							alterarParametro(arg);				
 							break;
 						}
 						else {
@@ -452,16 +464,23 @@ public class Funcoes {
 		}
 	}
 	
-	public static List<Object> obterListaTerminaisJogo(Call root){
+	public static List<Object> obterListaTerminaisObjetosJogo(Call root){
 		listaTerminaisObjetos.clear();
-		completarListaTerminaisCallTree(root);
+		completarListaTerminaisNumericosBooleanosCallTree(root);
 		return listaTerminaisObjetos;
+	}
+	
+	public static List<String> obterListaTerminaisStringsJogo(Call root){
+		listaTerminaisStringJogo.clear();
+		completarListaTerminaisNumericosBooleanosCallTree(root);
+		return listaTerminaisStringJogo;
 	}
 	
 	public static Call alterarTerminalCallTree(Call root, Object elementoEscolhido, int posicaoElemento){
 		indiceElementoCallTree = posicaoElemento;
 		indiceAtualElementoCallTree = 0;
 		elementoAlterado = elementoEscolhido;
+		numeroElementosAlteradosJogo = 0;
 		//System.out.println("Alterando o elemento na posição " + indiceElementoCallTree);
 		alterarCallTree(root);
 		return root;
@@ -508,5 +527,82 @@ public class Funcoes {
 		int posicao = rand.nextInt(quantidadeElementos);
 		return posicao;
 	}
+	
+	public static Call alterarParametro(Call objeto) {
+		String tipo = definirTipoTerminal(criarStringElemento(objeto));
+		if(tipo.equalsIgnoreCase("boolean")) {
+			return alterarParametroBooleano(objeto);
+		}
+		else if(tipo.equalsIgnoreCase("numeric")) {
+			return alterarParametroNumerico(objeto);
+		}
+		else {
+			return objeto;
+		}
+	}
+	
+	public static Call alterarParametroBooleano(Call objeto){
+		
+		numeroElementosAlteradosJogo++;
+		
+		System.out.println("[TCC] (booleano) Valor inicial:\t\t " + objeto.object().toString());
+		
+		if(objeto.object().toString().equalsIgnoreCase("true")) {
+			objeto.setObject((Object) false);
+		}
+		else if(objeto.object().toString().equalsIgnoreCase("false")) {
+			objeto.setObject((Object) true);
+		}
+		
+		System.out.println("[TCC] (booleano) Valor final:\t\t " + objeto.object().toString());
+		return objeto;
+	}
 
+	public static Call alterarParametroNumerico(Call objeto) {
+		
+		numeroElementosAlteradosJogo++;
+	
+		System.out.println("[TCC] (numerico) Valor inicial:\t\t " + objeto.object().toString());
+		
+		int sinal = 1;
+		final int valorSimbolo = Integer.parseInt(objeto.object().toString());
+		
+		if(valorSimbolo < 0) {
+			sinal = -1;
+		}
+		int novoValor = gerarInteiro(Integer.parseInt(objeto.object().toString()));
+		if (novoValor == 0) {
+			novoValor = gerarInteiro(3)*sinal;
+		}
+		//System.out.println("Setting " + arg.object().toString() + " to " + novoValor);
+		
+		Object obj = (Object) novoValor;
+		
+		objeto.setObject(obj);
+		
+		System.out.println("[TCC] (numerico) Valor final:\t\t " + objeto.object().toString());
+		return objeto;
+		
+	}
+	
+	public static String criarStringElemento(Call objeto) {	
+		String elemento = "";
+		elemento += objeto.getClass().getSimpleName() + ":" + objeto.object().toString();
+		return elemento;
+	}
+	
+	public static String definirTipoTerminal(String elemento) {
+		switch(elemento.split(":")[1]){
+			case "true":
+				return "boolean";
+			case "false":
+				return "boolean";
+			default:
+				return "numeric";
+		}
+	}
+	
+	public static void printarAsteriscos() {
+		System.out.println("******************************");
+	}
 }

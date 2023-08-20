@@ -3,6 +3,7 @@ package TCC;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.grammar.Call;
 import main.grammar.Description;
 
 public class BuscaLocal {
@@ -10,13 +11,55 @@ public class BuscaLocal {
 	final static boolean debug = false;
 	
 	final static List<String> listaNomesJogos = Funcoes.carregarListaJogos();
-	final static List<String> listaAI = Funcoes.carregarListaAI();
 	final static List<Description> jogosCarregados = Funcoes.carregarListaJogos(listaNomesJogos);
+	final static List<String> listaAI = Funcoes.carregarListaAI();
+	
+	public static void printarAsteriscos() {
+		System.out.println("******************************");
+	}
+	public static void funcaoParaTestes() {
+		Description descricao = jogosCarregados.get(0);
+		final List<Object> listaTerminais = Funcoes.obterListaTerminaisObjetosJogo(Funcoes.obterCallTree(descricao));
+		
+		/*
+		for (Object elemento : listaTerminais) {
+			System.out.println(elemento.toString());
+		}
+		*/
+		
+		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
+		//System.out.println("**************************************");
+		//System.out.println("[TCC] Call tree incial:");
+		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
+		for(int i = 0; i < 50; i++) {
+			int posicao = Funcoes.escolherNumeroIntervaloLista(listaTerminais.size());
+			
+			final List<Object> listaTerminaisIguais = new ArrayList<Object>();
+			Object elementoEscolhido = listaTerminais.get(posicao);
+			
+			printarAsteriscos();
+			System.out.println("[TCC] Terminal ["+ posicao +"] alterado: \t\t " + ((Call) listaTerminais.get(posicao)).object().toString());
+			
+			for(Object elemento : listaTerminais) {
+				if(elementoEscolhido.equals(elemento)) {
+					listaTerminaisIguais.add(elemento);
+				}
+			}
+			int terminalAlterado = Funcoes.escolherNumeroIntervaloLista(listaTerminaisIguais.size());
+			descricao.setCallTree(Funcoes.alterarTerminalCallTree(Funcoes.obterCallTree(descricao), elementoEscolhido, terminalAlterado));
+		}
+		
+		//System.out.println("[TCC] Terminal ["+ posicao +"] alterado: (" + tipo + ") " + listaTerminais.get(posicao).split(":")[1]);
+		//System.out.println("[TCC] Call tree final:");
+		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
+		//System.out.println("**************************************");
+		
+	}
 	
 	public static Description alterarParametro(Description descricao) {
 		//System.out.println("{\n\tkey: " + elemento.toString() + "\n\tvalue: " + elemento.split(":")[1] + ",\n},");
 		
-		final List<Object> listaTerminais = Funcoes.obterListaTerminaisJogo(Funcoes.obterCallTree(descricao));
+		final List<Object> listaTerminais = Funcoes.obterListaTerminaisObjetosJogo(Funcoes.obterCallTree(descricao));
 		
 		//System.out.println("**************************************");
 		//System.out.println("[TCC] Call tree incial:");
@@ -60,7 +103,7 @@ public class BuscaLocal {
 	public static void realizarExperimento(String nomeAI) {
 		
 		for(Description descricao : jogosCarregados) {
-			hillClimbing(descricao, nomeAI, 20); 
+			hillClimbing(descricao, nomeAI, 30); 
 		}
 
 	}
@@ -72,7 +115,7 @@ public class BuscaLocal {
 		}
 		
 		Description descricaoAtual = descricao;
-		Funcoes.criarAnalise(descricaoAtual, nomeAI, 10, 40);
+		Funcoes.criarAnalise(descricaoAtual, nomeAI, 20, 40);
 		float scoreAtual = Funcoes.carregarScoreAvaliacao();
 		
 		if(Funcoes.salvarJogo(Funcoes.gerarNomeArquivo(), descricaoAtual, diretorioExperimento)) {
@@ -90,7 +133,7 @@ public class BuscaLocal {
 				
 			}
 			
-			Funcoes.criarAnalise(descricaoBusca, nomeAI, 10, 40);
+			Funcoes.criarAnalise(descricaoBusca, nomeAI, 20, 40);
 			scoreBusca = Funcoes.carregarScoreAvaliacao();
 		
 			if(scoreBusca > scoreAtual) {
@@ -109,7 +152,8 @@ public class BuscaLocal {
 		}
 
 		long tempoInicial = System.nanoTime();
-		realizarExperimento(nomeAI);
+		//realizarExperimento(nomeAI);
+		funcaoParaTestes();
 		long tempoExecucao = System.nanoTime() - tempoInicial;
 		
 		System.out.println("Tempo decorrido: " + tempoExecucao/1_000_000_000 + " s");
