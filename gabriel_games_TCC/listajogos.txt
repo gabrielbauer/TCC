@@ -1,5 +1,1 @@
-Damas.lud
-Al-Qirq.lud
-Bravalath.lud
-Capture-the-Queen.lud
-Bagha-Guti.lud
+Alquerque.lud

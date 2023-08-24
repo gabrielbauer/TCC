@@ -8,6 +8,8 @@ import main.grammar.Description;
 
 public class BuscaLocal {
 	
+	final static int NUMERO_ITERACOES = 80;
+	
 	final static boolean debug = false;
 	
 	final static List<String> listaNomesJogos = Funcoes.carregarListaJogos();
@@ -20,17 +22,6 @@ public class BuscaLocal {
 	public static void funcaoParaTestes() {
 		Description descricao = jogosCarregados.get(0);
 		final List<Object> listaTerminais = Funcoes.obterListaTerminaisObjetosJogo(Funcoes.obterCallTree(descricao));
-		
-		/*
-		for (Object elemento : listaTerminais) {
-			System.out.println(elemento.toString());
-		}
-		*/
-		
-		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
-		//System.out.println("**************************************");
-		//System.out.println("[TCC] Call tree incial:");
-		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
 		for(int i = 0; i < 20; i++) {
 			int posicao = Funcoes.escolherNumeroIntervaloLista(listaTerminais.size());
 			
@@ -49,11 +40,6 @@ public class BuscaLocal {
 			descricao.setCallTree(Funcoes.alterarTerminalCallTree(Funcoes.obterCallTree(descricao), elementoEscolhido, terminalAlterado));
 		}
 		
-		//System.out.println("[TCC] Terminal ["+ posicao +"] alterado: (" + tipo + ") " + listaTerminais.get(posicao).split(":")[1]);
-		//System.out.println("[TCC] Call tree final:");
-		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
-		//System.out.println("**************************************");
-		
 	}
 	
 	public static Description alterarParametro(Description descricao) {
@@ -61,9 +47,6 @@ public class BuscaLocal {
 		
 		final List<Object> listaTerminais = Funcoes.obterListaTerminaisObjetosJogo(Funcoes.obterCallTree(descricao));
 		
-		//System.out.println("**************************************");
-		//System.out.println("[TCC] Call tree incial:");
-		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
 		int posicao = Funcoes.escolherNumeroIntervaloLista(listaTerminais.size());
 		//System.out.println("[TCC] Terminal ["+ posicao +"] alterado: " + listaTerminais.get(posicao));
 		final List<Object> listaTerminaisIguais = new ArrayList<Object>();
@@ -73,18 +56,8 @@ public class BuscaLocal {
 				listaTerminaisIguais.add(elemento);
 			}
 		}
-		/*for(int indice = 0; indice < listaTerminais.size(); indice++) {
-			if(listaTerminais.get(indice) == elementoEscolhido) {
-				System.out.println("[TCC] listaTerminais [" + indice + "]: " + listaTerminais.get(indice));
-			}
-		}*/
-		//System.out.println("[TCC] Elemento a ser alterado: " + posicao);
 		int terminalAlterado = Funcoes.escolherNumeroIntervaloLista(listaTerminaisIguais.size());
-		descricao.setCallTree(Funcoes.alterarTerminalCallTree(Funcoes.obterCallTree(descricao), elementoEscolhido, terminalAlterado));
-		//System.out.println("[TCC] Call tree final:");
-		//Funcoes.percorrerCallTree(Funcoes.obterCallTree(descricao));
-		//System.out.println("**************************************");
-		
+		descricao.setCallTree(Funcoes.alterarTerminalCallTree(Funcoes.obterCallTree(descricao), elementoEscolhido, terminalAlterado));		
 		return descricao;
 	}
 	
@@ -93,17 +66,14 @@ public class BuscaLocal {
 		if(diretorioExperimento == "") {
 			return;
 		}
-		
-		Description descricaoAtual = descricao;
-		Funcoes.criarAnalise(descricaoAtual, nomeAI, 15, 40);
-		float scoreAtual = Funcoes.carregarScoreAvaliacao();
-		System.out.println("Score joguinho: " + scoreAtual);
+				
+		hillClimbing(descricao, nomeAI, NUMERO_ITERACOES);
 	}
 	
 	public static void realizarExperimento(String nomeAI) {
 		
 		for(Description descricao : jogosCarregados) {
-			hillClimbing(descricao, nomeAI, 2); 
+			hillClimbing(descricao, nomeAI, NUMERO_ITERACOES); 
 		}
 
 	}
@@ -115,7 +85,7 @@ public class BuscaLocal {
 		}
 		
 		Description descricaoAtual = descricao;
-		Funcoes.criarAnalise(descricaoAtual, nomeAI, 1, 40);
+		Funcoes.criarAnalise(descricaoAtual, nomeAI, 15, 40);
 		float scoreAtual = Funcoes.carregarScoreAvaliacao();
 		
 		if(Funcoes.salvarJogo(Funcoes.gerarNomeArquivo(), descricaoAtual, diretorioExperimento)) {
@@ -127,20 +97,24 @@ public class BuscaLocal {
 		float scoreBusca = 0;
 		
 		for(int iteracao = 0; iteracao <= numeroIteracoes; iteracao++) {
-			System.out.println("Iteração " + iteracao);
+			System.out.println("Iteração " + iteracao + "/" + numeroIteracoes);
 			Description descricaoBusca = alterarParametro(descricaoAtual);
 			if(Funcoes.salvarJogo(Funcoes.gerarNomeArquivo(), descricaoBusca, diretorioExperimento)) {
 				
 			}
 			
-			Funcoes.criarAnalise(descricaoBusca, nomeAI, 1, 40);
+			Funcoes.criarAnalise(descricaoBusca, nomeAI, 15, 40);
 			scoreBusca = Funcoes.carregarScoreAvaliacao();
 		
 			if(scoreBusca > scoreAtual) {
 				System.out.println("[TCC] " + scoreBusca + " > " + scoreAtual);
+				System.out.println("[TCC] Descricao atual atualizada");
 				descricaoAtual = descricaoBusca;
 				scoreAtual = scoreBusca;
 			}
+		}
+		if(Funcoes.salvarJogo("descricao_final", descricaoAtual, diretorioExperimento)) {
+			
 		}
 	}
 	

@@ -78,6 +78,22 @@ public class Evaluation
 		}
 	};
 	
+	private final List<Metric> TCCMetrics = new ArrayList<>();
+	{
+		TCCMetrics.add(new IdealDuration());
+		TCCMetrics.add(new LeadChange());
+		TCCMetrics.add(new Completion());
+		TCCMetrics.add(new Drama(MultiMetricValue.Average, Concept.DramaAverage));
+		TCCMetrics.add(new DecisivenessThreshold());
+		TCCMetrics.add(new AdvantageP1());
+		TCCMetrics.add(new Balance());
+		TCCMetrics.add(new Completion());
+		TCCMetrics.add(new Drawishness());
+		TCCMetrics.add(new Timeouts());
+		TCCMetrics.add(new DecisivenessMoves());
+		//TCCMetrics.add(new SkillTrace());
+	}
+	
 	private final List<Metric> dialogMetrics = new ArrayList<>();
 	{
 		// Outcome
@@ -295,6 +311,11 @@ public class Evaluation
 	public List<Metric> conceptMetrics()
 	{
 		return Collections.unmodifiableList(conceptMetrics);
+	}
+	
+	public List<Metric> TCCMetrics()
+	{
+		return Collections.unmodifiableList(TCCMetrics);
 	}
 
 	//-------------------------------------------------------------------------

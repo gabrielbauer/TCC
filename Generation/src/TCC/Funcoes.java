@@ -346,7 +346,24 @@ public class Funcoes {
 		final Report report = new Report();
 		int indice = 0;
 		
-		//for (final Description description : jogosCarregados) {
+		/*
+		
+			duration: -0.0907
+			lead change: -0.2769
+			completion: 0.0788
+			drama(avg): 0.2167
+			decisiveness: 0.1311
+			advantageP1: 0.0394
+			balance: 0.1880
+			completion: 0.5941
+			drawishness: 0.4634
+			timeouts: 0.4962
+			DecisivenessMoves: -0.1288
+
+		 */
+		
+		final ArrayList<Double> weights = new ArrayList<>(Arrays.asList(-0.0907, -0.2769, 0.0788, 0.2167, 0.1311,
+				0.0394, 0.1880, 0.5941, 0.463, 0.4962, -0.1288));
 		
 		final Game game = Funcoes.carregarJogoPorDescricao(description);
 		final Evaluation evaluation = new Evaluation();
@@ -354,8 +371,8 @@ public class Funcoes {
 		final int numberTrials = numeroTentativas;
 		final int maxTurns = maximoTurnos;
 		final double thinkTime = 0.5;
-		final List<Metric> metricsToEvaluate = new Evaluation().dialogMetrics().subList(0, 7);
-		final ArrayList<Double> weights = new ArrayList<Double>();
+		final List<Metric> metricsToEvaluate = new Evaluation().TCCMetrics();
+		
 		final boolean useDatabaseGames = false;
 		
 		avaliarJogo(game, evaluation, report, options, numberTrials, maxTurns, thinkTime,
